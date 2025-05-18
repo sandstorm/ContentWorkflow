@@ -10,7 +10,7 @@ readonly final class WorkflowStepDefinition
         public WorkflowStepId $id,
         public string         $name,
         public string         $description,
-        public string         $backendFusionComponent,
+        public array          $ui,
     )
     {
     }
@@ -21,7 +21,7 @@ readonly final class WorkflowStepDefinition
             $id,
             $in['name'],
             $in['description'],
-            $in['backendFusionComponent'] ?? throw new \InvalidArgumentException($id . ': required property "backendFusionComponent" missing.'),
+            $in['ui'] ?? [],
         );
     }
 }

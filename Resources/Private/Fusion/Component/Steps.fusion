@@ -2,13 +2,30 @@ prototype(Sandstorm.ContentWorkflow:Component.Steps) < prototype(Neos.Fusion:Com
     // array of Sandstorm\ContentWorkflow\Domain\Workflow\Feature\WorkflowStep\State\Dto\StepWithState
     steps = null
 
+    // Single StepId
+    currentStepId = null
+
     renderer = afx`
+        <div class="workflowProgress">
+            <ul class="workflowProgress__steps">
 
-        <Neos.Fusion:Loop items={props.steps} itemName="step" @children="itemRenderer">
-            {step.definition.name}<br />
-            <Neos.Fusion:Renderer type={step.definition.backendFusionComponent} />
-
-        </Neos.Fusion:Loop>
-
+                <Neos.Fusion:Loop items={props.steps} itemName="step" itemKey="index" @children="itemRenderer">
+                    <li class={[
+                        'workflowProgress__step',
+                        step.alreadyExecuted ? 'workflowProgress__step--completed' : null,
+                        (props.currentStepId.value == step.definition.id.value) ? 'workflowProgress__step--active' : null,
+                        (!step.alreadyExecuted && props.currentStepId.value != step.definition.id.value) ? 'workflowProgress__step--future' : null
+                    ]}>
+                        <div class="workflowProgress__indicator">
+                            <span class="workflowProgress__number">{index + 1}</span>
+                        </div>
+                        <div class="workflowProgress__content">
+                            <h4 class="workflowProgress__title">{step.definition.name}</h4>
+                            <p class="workflowProgress__description">{step.definition.description}</p>
+                        </div>
+                    </li>
+                </Neos.Fusion:Loop>
+            </ul>
+        </div>
     `
 }

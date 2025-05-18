@@ -1,0 +1,114 @@
+.neos .neos-module-content {
+    .workflowProgress {
+        margin: 2rem 0;
+        font-family: inherit;
+        color: #fff;
+    }
+
+    .workflowProgress__steps {
+        display: flex;
+        list-style: none;
+        list-style-type: none;
+        padding: 0;
+        margin: 0;
+        position: relative;
+    }
+
+    .workflowProgress__steps::before {
+        content: '';
+        position: absolute;
+        top: 20px;
+        left: 40px;
+        width: calc(100% - 80px);
+        height: 2px;
+        background-color: #3f3f3f;
+        z-index: 1;
+    }
+
+    .workflowProgress__step {
+        flex: 1;
+        text-align: center;
+        position: relative;
+        z-index: 2;
+        padding: 0 1rem;
+        list-style-type: none; /* Ensure no bullets on individual steps */
+
+    }
+
+    .workflowProgress__indicator {
+        width: 40px;
+        height: 40px;
+        background-color: #323232;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1rem;
+        border: 2px solid #3f3f3f;
+        transition: all 0.3s ease;
+    }
+
+    .workflowProgress__number {
+        font-weight: bold;
+        color: #999;
+    }
+
+    .workflowProgress__content {
+        max-width: 150px;
+        margin: 0 auto;
+    }
+
+    .workflowProgress__title {
+        margin: 0 0 0.5rem;
+        font-size: 1rem;
+        font-weight: 600;
+        color: #fff;
+    }
+
+    .workflowProgress__description {
+        margin: 0;
+        font-size: 0.875rem;
+        color: #999;
+    }
+
+    /* Completed step */
+
+    .workflowProgress__step--completed .workflowProgress__indicator {
+        background-color: #00a338;
+        border-color: #00a338;
+    }
+
+    .workflowProgress__step--completed .workflowProgress__number {
+        color: #fff;
+    }
+
+    /* Active step */
+
+    .workflowProgress__step--active .workflowProgress__indicator {
+        border-color: #00adee;
+        background-color: #323232;
+    }
+
+    .workflowProgress__step--active .workflowProgress__title {
+        color: #00adee;
+    }
+
+    /* Future step */
+
+    .workflowProgress__step--future .workflowProgress__indicator {
+        background-color: #222;
+        border-color: #3f3f3f;
+    }
+
+    .workflowProgress__step--future .workflowProgress__number {
+        color: #777;
+    }
+
+    .workflowProgress__step--future .workflowProgress__title {
+        color: #bbb;
+    }
+
+    .workflowProgress__step--future .workflowProgress__description {
+        color: #777;
+    }
+
+}

@@ -1,4 +1,4 @@
-.save-button {
+.saveButton {
     background-color: #4CAF50;
     color: white;
     padding: 8px 16px;
@@ -10,22 +10,22 @@
     align-items: center;
     justify-content: center;
 }
-.save-button:hover {
+.saveButton:hover {
     background-color: #45a049;
 }
-.save-button.saving {
+.saveButton--saving {
     background-color: #555;
     cursor: not-allowed;
 }
-.save-button.saved {
-    background-color: #4CAF50;
+.saveButton--saved {
+    background-color: #4CAF50 !important;
 }
-.spinner {
+.saveButton__spinner {
     animation: rotate 2s linear infinite;
     width: 20px;
     height: 20px;
 }
-.spinner .path {
+.saveButton__spinner-path {
     stroke: white;
     stroke-linecap: round;
     animation: dash 1.5s ease-in-out infinite;
@@ -49,7 +49,7 @@
         stroke-dashoffset: -124;
     }
 }
-.checkmark {
+.saveButton__checkmark {
     width: 20px;
     height: 20px;
 }

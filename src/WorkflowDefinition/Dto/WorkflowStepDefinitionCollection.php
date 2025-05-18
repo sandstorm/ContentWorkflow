@@ -22,4 +22,12 @@ readonly final class WorkflowStepDefinitionCollection implements \IteratorAggreg
     {
         return new \ArrayIterator($this->items);
     }
+
+    public function first(): WorkflowStepDefinition
+    {
+        foreach ($this->items as $item) {
+            return $item;
+        }
+        throw new \RuntimeException("No items in collection");
+    }
 }

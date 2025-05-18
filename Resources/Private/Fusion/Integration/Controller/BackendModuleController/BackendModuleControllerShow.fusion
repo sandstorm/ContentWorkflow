@@ -1,16 +1,17 @@
 Sandstorm.ContentWorkflow.BackendModuleController.show = NeosBE:Module {
     content = afx`
 
-        <Sandstorm.ContentWorkflow:Component.Steps steps={steps} />
+        <Sandstorm.ContentWorkflow:Component.Steps steps={steps} currentStepId={currentStepId} />
 
         <div class="markdown-block-editor"
              data-csrf-token={csrfToken}
              data-dispatch-command-from-js-endpoint={dispatchCommandFromJsEndpoint}
              data-current-working-document={Json.stringify(currentWorkingDocument)}
+             data-css={css}
         ></div>
     `
 
     footer = afx`
-        <NeosBE:Button modal="start-workflow" icon="plus">Start Workflow</NeosBE:Button>
+        <NeosBE:Button action="complete" arguments.workflowId={workflowId} icon="plus">Start Workflow</NeosBE:Button>
     `
 }

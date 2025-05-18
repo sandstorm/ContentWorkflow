@@ -1,9 +1,11 @@
 //import "@blocknote/core/fonts/inter.css";
+import "./MarkdownBlockEditor.css";
+
 import { BlockNoteView } from "@blocknote/mantine";
 import "@blocknote/mantine/style.css";
 import { useCreateBlockNote } from "@blocknote/react";
 import { createRoot } from 'react-dom/client';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState, createContext, useContext } from 'react';
 import { BlockNoteEditor, PartialBlock } from '@blocknote/core'
 import { SaveButton, SaveStatus } from '../Component/SaveButton'
 import { DefaultBlockSchema } from '@blocknote/core/src/blocks/defaultBlocks'
@@ -29,20 +31,36 @@ interface MarkdownBlockEditorProps {
         contentAsHtml: string;
     }
 }
+
+const DispatchCommandContext = createContext(null);
+
+
 const MarkdownBlockEditor: React.FC<MarkdownBlockEditorProps> = (props: MarkdownBlockEditorProps)=> {
     // Creates a new editor instance.
     const editor = useCreateBlockNote({
         initialContent: props.currentWorkingDocument.contentAsBlocknoteJson
     });
 
+    async function dispatchCommand(payload: any) {
+        return await fetch(props.dispatchCommandFromJsEndpoint, {
+            method: 'POST',
+            credentials: 'same-origin',
+            body: JSON.stringify(payload),
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Flow-Csrftoken': props.csrfToken,
+            }
+        })
+    };
+
     // Use custom hooks
-    const { saveStatus, saveDocument } = useSaveDocument(editor, props.csrfToken, props.dispatchCommandFromJsEndpoint);
+    const { saveStatus, saveDocument } = useSaveDocument(editor, dispatchCommand);
     useKeyboardShortcuts({ save: saveDocument });
 
-    return <>
+    return <DispatchCommandContext.Provider value={dispatchCommand}>
         <BlockNoteView editor={editor} theme="dark" />
-        <EditorToolbar onSave={saveDocument} saveStatus={saveStatus} />
-    </>;
+        <EditorToolbar onSave={saveDocument} saveStatus={saveStatus}  />
+    </DispatchCommandContext.Provider>;
 }
 
 // Interface for save hook return value
@@ -52,10 +70,10 @@ interface SaveHookResult {
 }
 
 // Custom hook for save functionality
-const useSaveDocument = (editor: BlockNoteEditor, csrfToken: string, dispatchCommandFromJsEndpoint: string): SaveHookResult => {
+const useSaveDocument = (editor: BlockNoteEditor, dispatchCommand: any): SaveHookResult => {
     const [saveStatus, setSaveStatus] = useState<SaveStatus>('idle');
 
-    const saveDocument = useCallback(() => {
+    const saveDocument = useCallback(async () => {
         // Skip if already saving
         if (saveStatus === 'saving') return;
 
@@ -75,20 +93,12 @@ const useSaveDocument = (editor: BlockNoteEditor, csrfToken: string, dispatchCom
                 const markdownFromBlocks = await editor.blocksToMarkdownLossy();
                 const htmlFromBlocks = await editor.blocksToHTMLLossy();
 
-                await fetch(dispatchCommandFromJsEndpoint, {
-                    method: 'POST',
-                    credentials: 'same-origin',
-                    body: JSON.stringify({
-                        command: 'SaveWorkingDocument',
-                        contentAsBlocknoteJson: content,
-                        contentAsMarkdown: markdownFromBlocks,
-                        contentAsHtml: htmlFromBlocks,
-                    }),
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-Flow-Csrftoken': csrfToken,
-                    }
-                })
+                await dispatchCommand({
+                    command: 'SaveWorkingDocument',
+                    contentAsBlocknoteJson: content,
+                    contentAsMarkdown: markdownFromBlocks,
+                    contentAsHtml: htmlFromBlocks,
+                });
 
                 // Set to saved when complete
                 setSaveStatus('saved');
@@ -104,8 +114,7 @@ const useSaveDocument = (editor: BlockNoteEditor, csrfToken: string, dispatchCom
             }
         };
 
-        // Execute the save function
-        saveToServer();
+        await saveToServer();
     }, [editor, saveStatus]);
 
     return { saveStatus, saveDocument };
@@ -147,16 +156,15 @@ interface EditorToolbarProps {
 
 // Editor Toolbar Component
 const EditorToolbar: React.FC<EditorToolbarProps> = ({ onSave, saveStatus }) => {
+    const dispatchCommand = useContext(DispatchCommandContext);
     return (
         <div className="editor-toolbar">
             <SaveButton onClick={onSave} status={saveStatus} />
-            <style jsx>{`
-        .editor-toolbar {
-          margin-top: 10px;
-          display: flex;
-          justify-content: flex-end;
-        }
-      `}</style>
+            <button onClick={async () => {
+                await dispatchCommand({
+                    command: 'FinishCurrentStep',
+                });
+            }}>Finish Current Step</button>
         </div>
     );
 };

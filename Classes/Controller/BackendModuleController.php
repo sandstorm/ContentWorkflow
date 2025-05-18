@@ -3,11 +3,13 @@
 namespace Sandstorm\ContentWorkflow\Controller;
 
 use Imagine\Filter\Basic\Save;
+use Neos\Flow\ResourceManagement\ResourceManager;
 use Neos\Flow\Security\Context;
 use Neos\Fusion\View\FusionView;
 use Neos\Neos\Controller\Module\AbstractModuleController;
 use Sandstorm\ContentWorkflow\Domain\Workflow\DrivingPorts\ForWorkflow;
 use Sandstorm\ContentWorkflow\Domain\Workflow\Feature\WorkflowLifecycle\Command\StartWorkflowFromScratch;
+use Sandstorm\ContentWorkflow\Domain\Workflow\Feature\WorkflowStep\Command\FinishCurrentStep;
 use Sandstorm\ContentWorkflow\Domain\Workflow\Feature\WorkflowStep\Command\SaveWorkingDocument;
 use Sandstorm\ContentWorkflow\Domain\Workflow\Feature\WorkflowStep\State\WorkflowStepState;
 use Sandstorm\ContentWorkflow\Domain\Workflow\ValueObject\WorkflowId;
@@ -24,6 +26,7 @@ class BackendModuleController extends AbstractModuleController
         protected readonly ForWorkflow $workflowApp,
         protected readonly WorkflowFactory $workflowFactory,
         protected readonly Context $securityContext,
+        protected readonly ResourceManager $resourceManager,
     )
     {
 
@@ -53,8 +56,11 @@ class BackendModuleController extends AbstractModuleController
 
         $steps = WorkflowStepState::stepListWithCurrentState($state, $this->workflowApp->definitions());
         $this->view->assign('steps', $steps);
+        $this->view->assign('workflowId', $workflowId);
         $this->view->assign('csrfToken', $this->securityContext->getCsrfProtectionToken());
         $this->view->assign('dispatchCommandFromJsEndpoint', $this->uriBuilder->uriFor('dispatchCommandFromJs', ['workflowId' => $workflowId->value]));
+        $this->view->assign('css', $this->resourceManager->getPublicPackageResourceUri('Sandstorm.ContentWorkflow', 'built/BackendModule.css'));
+        $this->view->assign('currentStepId', WorkflowStepState::currentStep($state, $this->workflowApp->definitions())->id);
         $this->view->assign('currentWorkingDocument', WorkflowStepState::currentWorkingDocument($state));
     }
 
@@ -65,6 +71,9 @@ class BackendModuleController extends AbstractModuleController
         switch ($body['command']) {
             case 'SaveWorkingDocument':
                 $this->workflowApp->handle($workflowId, SaveWorkingDocument::fromArray($body));
+                break;
+            case 'FinishCurrentStep':
+                $this->workflowApp->handle($workflowId, FinishCurrentStep::fromArray($body));
                 break;
             default:
                 throw new \Exception('Unknown command: ' . $body['command']);

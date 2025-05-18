@@ -15,6 +15,7 @@ use Sandstorm\ContentWorkflow\Domain\Workflow\Feature\WorkflowLifecycle\Event\Wo
 use Sandstorm\ContentWorkflow\Domain\Workflow\Feature\WorkflowLifecycle\Event\WorkflowWasReopened;
 use Sandstorm\ContentWorkflow\Domain\Workflow\Feature\WorkflowLifecycle\Event\WorkflowWasStarted;
 use Sandstorm\ContentWorkflow\Domain\Workflow\Feature\WorkflowLifecycle\WorkflowLifecycleCommandHandler;
+use Sandstorm\ContentWorkflow\Domain\Workflow\Feature\WorkflowStep\Event\CurrentStepFinished;
 use Sandstorm\ContentWorkflow\Domain\Workflow\Feature\WorkflowStep\Event\WorkingDocumentSaved;
 use Sandstorm\ContentWorkflow\Domain\Workflow\Feature\WorkflowStep\WorkflowStepCommandHandler;
 use Sandstorm\ContentWorkflow\Domain\Workflow\ValueObject\WorkflowId;
@@ -51,6 +52,7 @@ final class CoreWorkflowApp implements DrivingPorts\ForWorkflow
             WorkflowWasReopened::class,
 
             WorkingDocumentSaved::class,
+            CurrentStepFinished::class,
         ]);
         $this->workflowEventStore = new WorkflowEventStore($eventStore, $eventNormalizer);
 
