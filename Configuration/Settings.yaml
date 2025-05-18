@@ -1,0 +1,22 @@
+Neos:
+  Neos:
+    modules:
+      management:
+        submodules:
+          contentWorkflow:
+            label: 'Content Workflow'
+            description: 'Content Workflows'
+            icon: 'magic'
+            controller: 'Sandstorm\ContentWorkflow\Controller\BackendModuleController'
+            privilegeTarget: 'Sandstorm.ContentWorkflow:BackendModuleController'
+            additionalResources:
+              styleSheets:
+                - 'resource://Wwwision.Neos.ModuleComponents/Public/Styles/module.css'
+              javaScripts:
+                - 'resource://Wwwision.Neos.ModuleComponents/Public/Scripts/module.js'
+
+  Flow:
+    object:
+      includeClasses:
+        'Sandstorm.ContentWorkflow':
+          - '^(?!.*Domain).*$'

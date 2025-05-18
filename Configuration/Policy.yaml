@@ -1,0 +1,11 @@
+privilegeTargets:
+  'Neos\Flow\Security\Authorization\Privilege\Method\MethodPrivilege':
+    'Sandstorm.ContentWorkflow:BackendModuleController':
+      matcher: 'method(Sandstorm\ContentWorkflow\Controller\BackendModuleController->(.*)Action())'
+
+roles:
+  'Neos.Neos:AbstractEditor':
+    privileges:
+      -
+        privilegeTarget: 'Sandstorm.ContentWorkflow:BackendModuleController'
+        permission: GRANT

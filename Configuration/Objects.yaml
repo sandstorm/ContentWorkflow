@@ -1,0 +1,4 @@
+Sandstorm\ContentWorkflow\Domain\Workflow\DrivingPorts\ForWorkflow:
+  scope: singleton
+  factoryObjectName: Sandstorm\ContentWorkflow\Factory\WorkflowFactory
+  factoryMethodName: create

@@ -47,11 +47,49 @@ transition: fade-out
 For Which kind of Problems?
 
 - Foo
-
-
+- 
 <!--
 Here is another comment.
 -->
+
+---
+
+# ForWorkflow / WorkflowApp
+
+- central API / Entry point
+  - Decision: one stream per "WorkflowId" -> these are my "entities"
+
+# WorkflowEventStore
+
+- EventNormalizer
+
+# CommandHandler
+
+- CommandBus
+- anatomy of a Command Handler
+
+# Feature
+
+- Command
+- Event
+- CommandHandler
+- State?? TODO
+
+# Each CommandHandler:
+
+access current state (=events); validate
+read external data (=config, definitions, ...)
+emit events
+
+# Eventual Consistency or == consistency
+
+-> still, very strong guarantees; because of 
+
+# State accessor:
+
+NOT allowed to read any external data.
+
+# Projections (==Persistent State)
 
 ---
 transition: slide-up

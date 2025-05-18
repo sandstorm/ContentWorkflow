@@ -1,0 +1,26 @@
+Sandstorm.ContentWorkflow.BackendModuleController.index = NeosBE:Module {
+    content = afx`
+
+        <NeosBE:ModalForm id="start-workflow" header="Start workflow" cancelButtonText="Cancel" submitButtonIcon="plus" submitButtonText="Start Workflow now"  form.target.action="startWorkflow">
+            <Neos.Fusion.Form:Neos.BackendModule.FieldContainer field.name="form[title]" label="Working Title (can be changed later)">
+                <Neos.Fusion.Form:Textfield attributes.class="neos-span12"/>
+            </Neos.Fusion.Form:Neos.BackendModule.FieldContainer>
+
+            <Neos.Fusion.Form:Neos.BackendModule.FieldContainer field.name="form[definitionId]" label="Workflow Definition">
+                <Neos.Fusion.Form:Select attributes.class="neos-span12">
+                    <Neos.Fusion:Loop items={definitions} itemName="definition" @children="itemRenderer">
+                        <Neos.Fusion.Form:Select.Option option.value={definition.id.value}>
+                            {definition.name}
+                        </Neos.Fusion.Form:Select.Option>
+                    </Neos.Fusion:Loop>
+                </Neos.Fusion.Form:Select>
+            </Neos.Fusion.Form:Neos.BackendModule.FieldContainer>
+        </NeosBE:ModalForm>
+
+        this should be the main body content.
+    `
+
+    footer = afx`
+        <NeosBE:Button modal="start-workflow" icon="plus">Start Workflow</NeosBE:Button>
+    `
+}

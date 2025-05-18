@@ -1,0 +1,31 @@
+{
+    "description": "",
+    "type": "neos-package",
+    "require": {
+        "neos/neos": "^8.3 || ^8.4",
+        "neos/eventstore": "^1.0.2",
+        "neos/eventstore-doctrineadapter": "^1.0.0",
+        "neos/fusion": "*",
+        "neos/fusion-afx": "*",
+        "wwwision/neos-modulecomponents": "^1"
+    },
+    "suggest": {
+    },
+    "name": "sandstorm/contentworkflow",
+    "autoload": {
+        "psr-4": {
+            "Sandstorm\\ContentWorkflow\\Domain\\": "src/",
+            "Sandstorm\\ContentWorkflow\\": "Classes/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Sandstorm\\ContentWorkflow\\Tests\\": "Tests/"
+        }
+    },
+    "extra": {
+        "neos": {
+            "package-key": "Sandstorm.ContentWorkflow"
+        }
+    }
+}
