@@ -10,8 +10,8 @@ use Sandstorm\ContentWorkflow\Domain\WorkflowDefinition\ValueObject\WorkflowDefi
 readonly class WorkflowWasStarted implements WorkflowEventInterface
 {
     public function __construct(
-        private WorkflowDefinitionId $workflowDefinitionId,
-        private WorkflowTitle $workflowTitle,
+        public WorkflowDefinitionId $workflowDefinitionId,
+        public WorkflowTitle $workflowTitle,
     )
     {
     }

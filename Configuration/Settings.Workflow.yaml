@@ -9,18 +9,19 @@ Sandstorm:
           idea:
             name: 'Idea'
             description: 'Jot down the rough idea of the blog post (Bullet points, markdown is fine)'
-          outline:
-            name: 'Post Outline'
-            description: ''
-          draft:
-            name: 'Write draft'
-            description: ''
-          review:
-            name: 'Review and improve draft'
-            description: ''
-          published:
-            name: 'Published'
-            description: ''
-          sharedOnSocialMedia:
-            name: 'Shared on social media'
-            description: ''
+            backendFusionComponent: 'Sandstorm.ContentWorkflow:Step.MarkdownfieldInput'
+#          outline:
+#            name: 'Post Outline'
+#            description: ''
+#          draft:
+#            name: 'Write draft'
+#            description: ''
+#          review:
+#            name: 'Review and improve draft'
+#            description: ''
+#          published:
+#            name: 'Published'
+#            description: ''
+#          sharedOnSocialMedia:
+#            name: 'Shared on social media'
+#            description: ''

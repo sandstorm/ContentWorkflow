@@ -8,6 +8,7 @@ use Sandstorm\ContentWorkflow\Domain\Workflow\EventStore\WorkflowEvents;
 use Sandstorm\ContentWorkflow\Domain\Workflow\Feature\WorkflowLifecycle\Event\WorkflowWasAborted;
 use Sandstorm\ContentWorkflow\Domain\Workflow\Feature\WorkflowLifecycle\Event\WorkflowWasReopened;
 use Sandstorm\ContentWorkflow\Domain\Workflow\Feature\WorkflowLifecycle\Event\WorkflowWasStarted;
+use Sandstorm\ContentWorkflow\Domain\WorkflowDefinition\ValueObject\WorkflowDefinitionId;
 
 class WorkflowLifecycleState
 {
@@ -17,5 +18,10 @@ class WorkflowLifecycleState
 
         // the last event of the 3 above must be Started or reopened for the workflow to be active.
         return $event instanceof WorkflowWasStarted || $event instanceof WorkflowWasReopened;
+    }
+
+    static public function definitionId(WorkflowEvents $state): WorkflowDefinitionId
+    {
+        return $state->findFirst(WorkflowWasStarted::class)->workflowDefinitionId;
     }
 }

@@ -9,26 +9,30 @@ use Sandstorm\ContentWorkflow\Domain\WorkflowDefinition\ValueObject\WorkflowStep
 readonly final class WorkflowDefinition implements \Stringable
 {
     public function __construct(
-        public WorkflowDefinitionId   $id,
-        public string                 $name,
-        public string                 $description,
-        public WorkflowStepCollection $steps,
+        public WorkflowDefinitionId             $id,
+        public string                           $name,
+        public string                           $description,
+        public WorkflowStepDefinitionCollection $stepDefinitions,
     )
     {
     }
 
     public static function fromArray(WorkflowDefinitionId $id, array $in): self
     {
-        $steps = [];
-        foreach ($in['steps'] as $key => $inStep) {
-            $steps[] = WorkflowStep::fromArray(WorkflowStepId::fromString($key), $inStep);
+        try {
+            $steps = [];
+            foreach ($in['steps'] as $key => $inStep) {
+                $steps[] = WorkflowStepDefinition::fromArray(WorkflowStepId::fromString($key), $inStep);
+            }
+            return new self(
+                $id,
+                $in['name'],
+                $in['description'],
+                new WorkflowStepDefinitionCollection($steps),
+            );
+        } catch (\Throwable $e) {
+            throw new \InvalidArgumentException($id . ': Invalid workflow definition. See nested exception for details.', 0, $e);
         }
-        return new self(
-            $id,
-            $in['name'],
-            $in['description'],
-            new WorkflowStepCollection($steps),
-        );
     }
 
 

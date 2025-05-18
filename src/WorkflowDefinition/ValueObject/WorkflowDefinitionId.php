@@ -27,8 +27,7 @@ class WorkflowDefinitionId implements \JsonSerializable
 
     public function __toString(): string
     {
-        // !!! important to return direct value for routing etc !!!
-        return $this->value;
+        return '[WorkflowDefinition: ' . $this->value . ']';
     }
 
     public function equals(WorkflowDefinitionId $other): bool

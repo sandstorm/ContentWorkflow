@@ -1,18 +1,22 @@
-const esbuild = require('esbuild');
-const isWatch = process.argv.includes('--watch');
+const esbuild = require('esbuild')
+//const extensibilityMap = require("@neos-project/neos-ui-extensibility/extensibilityMap.json");
+const isWatch = process.argv.includes('--watch')
 
-/** @type {import("esbuild").BuildOptions} */
+/** @type {import('esbuild').BuildOptions} */
 const options = {
-    logLevel: "info",
+    logLevel: 'info',
     bundle: true,
-    target: "es2020",
-    entryPoints: { "Plugin": "src/index.js" },
+    target: 'es2020',
+    entryPoints: {
+        'BackendModule': 'Resources/Private/JavaScript/BackendModule.ts',
+    },
+
     // add this loader mapping,
     // in case youre "missusing" javascript files as typescript-react files
     // - eg with `@neos` or `@connect` decorators
-    //loader: { ".s": "tsx" },
-    outdir: "../../Public/NeosUserInterface",
-    //alias: extensibilityMap
+    loader: { '.js': 'tsx' },
+    outdir: 'Resources/Public/built',
+//    alias: extensibilityMap
 }
 
 if (isWatch) {

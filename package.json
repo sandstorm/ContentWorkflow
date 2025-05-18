@@ -1,0 +1,16 @@
+{
+    "dependencies": {
+        "@blocknote/core": "^0.30.0",
+        "@blocknote/mantine": "^0.30.0",
+        "@blocknote/react": "^0.30.0",
+        "react": "^19.1.0",
+        "react-dom": "^19.1.0"
+    },
+    "devDependencies": {
+        "esbuild": "0.25.4"
+    },
+    "scripts": {
+        "build": "node Scripts/esbuild.js",
+        "watch": "node Scripts/esbuild.js --watch"
+    }
+}

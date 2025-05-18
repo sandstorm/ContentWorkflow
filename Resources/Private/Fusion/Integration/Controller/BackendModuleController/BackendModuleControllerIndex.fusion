@@ -1,6 +1,5 @@
 Sandstorm.ContentWorkflow.BackendModuleController.index = NeosBE:Module {
     content = afx`
-
         <NeosBE:ModalForm id="start-workflow" header="Start workflow" cancelButtonText="Cancel" submitButtonIcon="plus" submitButtonText="Start Workflow now"  form.target.action="startWorkflow">
             <Neos.Fusion.Form:Neos.BackendModule.FieldContainer field.name="form[title]" label="Working Title (can be changed later)">
                 <Neos.Fusion.Form:Textfield attributes.class="neos-span12"/>

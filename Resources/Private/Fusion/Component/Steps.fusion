@@ -1,0 +1,14 @@
+prototype(Sandstorm.ContentWorkflow:Component.Steps) < prototype(Neos.Fusion:Component) {
+    // array of Sandstorm\ContentWorkflow\Domain\Workflow\Feature\WorkflowStep\State\Dto\StepWithState
+    steps = null
+
+    renderer = afx`
+
+        <Neos.Fusion:Loop items={props.steps} itemName="step" @children="itemRenderer">
+            {step.definition.name}<br />
+            <Neos.Fusion:Renderer type={step.definition.backendFusionComponent} />
+
+        </Neos.Fusion:Loop>
+
+    `
+}

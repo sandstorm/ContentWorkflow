@@ -12,8 +12,10 @@ Neos:
             additionalResources:
               styleSheets:
                 - 'resource://Wwwision.Neos.ModuleComponents/Public/Styles/module.css'
+                - 'resource://Sandstorm.ContentWorkflow/Public/built/BackendModule.css'
               javaScripts:
                 - 'resource://Wwwision.Neos.ModuleComponents/Public/Scripts/module.js'
+                - 'resource://Sandstorm.ContentWorkflow/Public/built/BackendModule.js'
 
   Flow:
     object:

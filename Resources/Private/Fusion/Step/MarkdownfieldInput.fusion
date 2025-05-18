@@ -1,0 +1,6 @@
+prototype(Sandstorm.ContentWorkflow:Step.MarkdownfieldInput) < prototype(Neos.Fusion:Component) {
+
+    renderer = afx`
+        Markdown Field Input
+    `
+}

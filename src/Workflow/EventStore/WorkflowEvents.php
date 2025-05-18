@@ -17,17 +17,12 @@ final readonly class WorkflowEvents implements \IteratorAggregate, \Countable
     /**
      * @var non-empty-array<WorkflowEventInterface>
      */
-    public array $events;
+    private array $events;
 
     private function __construct(WorkflowEventInterface ...$events)
     {
         /** @var non-empty-array<WorkflowEventInterface> $events */
         $this->events = $events;
-    }
-
-    public static function with(WorkflowEventInterface $event): self
-    {
-        return new self($event);
     }
 
     /**

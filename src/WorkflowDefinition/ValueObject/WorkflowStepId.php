@@ -27,8 +27,7 @@ class WorkflowStepId implements \JsonSerializable
 
     public function __toString(): string
     {
-        // !!! important to return direct value for routing etc !!!
-        return $this->value;
+        return '[WorkflowStep: ' . $this->value . ']';
     }
 
     public function equals(WorkflowStepId $other): bool

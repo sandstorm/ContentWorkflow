@@ -12,7 +12,7 @@ use Sandstorm\ContentWorkflow\Domain\Workflow\Feature\WorkflowLifecycle\State\Wo
 use Sandstorm\ContentWorkflow\Domain\Workflow\ValueObject\WorkflowId;
 use Sandstorm\ContentWorkflow\Domain\Workflow\ValueObject\WorkflowTitle;
 use Sandstorm\ContentWorkflow\Domain\WorkflowDefinition\Dto\WorkflowDefinition;
-use Sandstorm\ContentWorkflow\Domain\WorkflowDefinition\Dto\WorkflowStepCollection;
+use Sandstorm\ContentWorkflow\Domain\WorkflowDefinition\Dto\WorkflowStepDefinitionCollection;
 use Sandstorm\ContentWorkflow\Domain\WorkflowDefinition\ValueObject\WorkflowDefinitionId;
 use Sandstorm\ContentWorkflow\Domain\WorkflowDefinition\WorkflowDefinitionApp;
 
@@ -26,7 +26,7 @@ class WorkflowBasicLifecycleTest extends UnitTestCase
             id: WorkflowDefinitionId::fromString('wf1'),
             name: 'Blog Post creation',
             description: 'A workflow for blog posts',
-            steps: new WorkflowStepCollection([]),
+            stepDefinitions: new WorkflowStepDefinitionCollection([]),
         );
 
         $this->workflowApp = CoreWorkflowApp::createInMemoryForTesting(new WorkflowDefinitionApp($workflow1));

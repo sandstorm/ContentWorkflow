@@ -39,3 +39,5 @@ https://reachat.dev/
 https://github.com/assistant-ui/assistant-ui
 !!!
 
+
+Vercel AI SDK
