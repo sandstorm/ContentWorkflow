@@ -5,6 +5,7 @@ namespace Sandstorm\ContentWorkflow\Domain\Workflow\Feature\WorkflowStep\State;
 use Sandstorm\ContentWorkflow\Domain\Workflow\EventStore\WorkflowEvents;
 use Sandstorm\ContentWorkflow\Domain\Workflow\Feature\WorkflowLifecycle\State\WorkflowLifecycleState;
 use Sandstorm\ContentWorkflow\Domain\Workflow\Feature\WorkflowStep\Dto\WorkingDocumentContent;
+use Sandstorm\ContentWorkflow\Domain\Workflow\Feature\WorkflowStep\Event\StepFinished;
 use Sandstorm\ContentWorkflow\Domain\Workflow\Feature\WorkflowStep\Event\WorkingDocumentSaved;
 use Sandstorm\ContentWorkflow\Domain\Workflow\Feature\WorkflowStep\State\Dto\StepWithState;
 use Sandstorm\ContentWorkflow\Domain\WorkflowDefinition\DrivingPorts\ForWorkflowDefinition;
@@ -17,8 +18,14 @@ class WorkflowStepState
     {
         $definitionId = WorkflowLifecycleState::definitionId($state);
         $definition = $definitions->getWorkflowDefinitionOrThrow($definitionId);
-        // TODO: also show later steps if needed
-        return $definition->stepDefinitions->first();
+
+        $finishedSteps = $state->findAllOfType(StepFinished::class);
+        foreach ($definition->stepDefinitions as $stepDefinition) {
+            $alreadyExecuted = $finishedSteps->findLastOrNullWhere(fn(StepFinished $e) => $e->stepId->equals($stepDefinition->id)) !== null;
+            if (!$alreadyExecuted) {
+                return $stepDefinition;
+            }
+        }
     }
 
     /**
@@ -28,12 +35,14 @@ class WorkflowStepState
     {
         $definitionId = WorkflowLifecycleState::definitionId($state);
         $definition = $definitions->getWorkflowDefinitionOrThrow($definitionId);
+        $finishedSteps = $state->findAllOfType(StepFinished::class);
 
         $steps = [];
         foreach ($definition->stepDefinitions as $stepDefinition) {
+            $alreadyExecuted = $finishedSteps->findLastOrNullWhere(fn(StepFinished $e) => $e->stepId->equals($stepDefinition->id)) !== null;
             $steps[] = new StepWithState(
                 definition: $stepDefinition,
-                alreadyExecuted: false, // TODO IMPL ME
+                alreadyExecuted: $alreadyExecuted, // TODO IMPL ME
             );
         }
         return $steps;

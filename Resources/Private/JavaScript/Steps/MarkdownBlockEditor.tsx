@@ -17,6 +17,7 @@ export function init() {
         root.render(<MarkdownBlockEditor
             csrfToken={el.dataset.csrfToken}
             dispatchCommandFromJsEndpoint={el.dataset.dispatchCommandFromJsEndpoint}
+            currentStepId={el.dataset.currentStepId}
             currentWorkingDocument={JSON.parse(el.dataset.currentWorkingDocument || "undefined")}
         />);
     });
@@ -25,6 +26,7 @@ export function init() {
 interface MarkdownBlockEditorProps {
     csrfToken: string;
     dispatchCommandFromJsEndpoint: string;
+    currentStepId: string;
     currentWorkingDocument?: {
         contentAsBlocknoteJson: DefaultBlockSchema;
         contentAsMarkdown: string;
@@ -38,7 +40,7 @@ const DispatchCommandContext = createContext(null);
 const MarkdownBlockEditor: React.FC<MarkdownBlockEditorProps> = (props: MarkdownBlockEditorProps)=> {
     // Creates a new editor instance.
     const editor = useCreateBlockNote({
-        initialContent: props.currentWorkingDocument.contentAsBlocknoteJson
+        initialContent: props.currentWorkingDocument?.contentAsBlocknoteJson
     });
 
     async function dispatchCommand(payload: any) {
@@ -59,7 +61,7 @@ const MarkdownBlockEditor: React.FC<MarkdownBlockEditorProps> = (props: Markdown
 
     return <DispatchCommandContext.Provider value={dispatchCommand}>
         <BlockNoteView editor={editor} theme="dark" />
-        <EditorToolbar onSave={saveDocument} saveStatus={saveStatus}  />
+        <EditorToolbar onSave={saveDocument} saveStatus={saveStatus} currentStepId={props.currentStepId} />
     </DispatchCommandContext.Provider>;
 }
 
@@ -152,10 +154,11 @@ const useKeyboardShortcuts = (shortcuts: ShortcutHandlers): void => {
 interface EditorToolbarProps {
     onSave: () => void;
     saveStatus: SaveStatus;
+    currentStepId: string;
 }
 
 // Editor Toolbar Component
-const EditorToolbar: React.FC<EditorToolbarProps> = ({ onSave, saveStatus }) => {
+const EditorToolbar: React.FC<EditorToolbarProps> = ({ onSave, saveStatus, currentStepId }) => {
     const dispatchCommand = useContext(DispatchCommandContext);
     return (
         <div className="editor-toolbar">
@@ -163,7 +166,9 @@ const EditorToolbar: React.FC<EditorToolbarProps> = ({ onSave, saveStatus }) => 
             <button onClick={async () => {
                 await dispatchCommand({
                     command: 'FinishCurrentStep',
+                    stepId: currentStepId,
                 });
+                window.location.reload();
             }}>Finish Current Step</button>
         </div>
     );
