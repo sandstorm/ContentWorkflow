@@ -9,6 +9,8 @@ import React, { useCallback, useEffect, useState, createContext, useContext } fr
 import { BlockNoteEditor, PartialBlock } from '@blocknote/core'
 import { SaveButton, SaveStatus } from '../Component/SaveButton'
 import { DefaultBlockSchema } from '@blocknote/core/src/blocks/defaultBlocks'
+import {DispatchCommandContext} from '../context';
+import { EditorToolbar } from '../Component/EditorToolbar'
 
 export function init() {
     document.querySelectorAll('.markdown-block-editor').forEach((el: HTMLElement) => {
@@ -33,9 +35,6 @@ interface MarkdownBlockEditorProps {
         contentAsHtml: string;
     }
 }
-
-const DispatchCommandContext = createContext(null);
-
 
 const MarkdownBlockEditor: React.FC<MarkdownBlockEditorProps> = (props: MarkdownBlockEditorProps)=> {
     // Creates a new editor instance.
@@ -149,27 +148,3 @@ const useKeyboardShortcuts = (shortcuts: ShortcutHandlers): void => {
     }, [shortcuts]);
 };
 
-
-// Props for the EditorToolbar component
-interface EditorToolbarProps {
-    onSave: () => void;
-    saveStatus: SaveStatus;
-    currentStepId: string;
-}
-
-// Editor Toolbar Component
-const EditorToolbar: React.FC<EditorToolbarProps> = ({ onSave, saveStatus, currentStepId }) => {
-    const dispatchCommand = useContext(DispatchCommandContext);
-    return (
-        <div className="editor-toolbar">
-            <SaveButton onClick={onSave} status={saveStatus} />
-            <button onClick={async () => {
-                await dispatchCommand({
-                    command: 'FinishCurrentStep',
-                    stepId: currentStepId,
-                });
-                window.location.reload();
-            }}>Finish Current Step</button>
-        </div>
-    );
-};
