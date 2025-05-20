@@ -6,11 +6,11 @@ import "@blocknote/mantine/style.css";
 import { useCreateBlockNote } from "@blocknote/react";
 import { createRoot } from 'react-dom/client';
 import React, { useCallback, useEffect, useState, createContext, useContext } from 'react';
-import { BlockNoteEditor, PartialBlock } from '@blocknote/core'
-import { SaveButton, SaveStatus } from '../Component/SaveButton'
 import { DefaultBlockSchema } from '@blocknote/core/src/blocks/defaultBlocks'
 import {DispatchCommandContext} from '../context';
 import { EditorToolbar } from '../Component/EditorToolbar'
+import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts'
+import { useSaveDocument } from './hooks/useSaveDocument'
 
 export function init() {
     document.querySelectorAll('.markdown-block-editor').forEach((el: HTMLElement) => {
@@ -54,7 +54,6 @@ const MarkdownBlockEditor: React.FC<MarkdownBlockEditorProps> = (props: Markdown
         })
     };
 
-    // Use custom hooks
     const { saveStatus, saveDocument } = useSaveDocument(editor, dispatchCommand);
     useKeyboardShortcuts({ save: saveDocument });
 
@@ -63,88 +62,3 @@ const MarkdownBlockEditor: React.FC<MarkdownBlockEditorProps> = (props: Markdown
         <EditorToolbar onSave={saveDocument} saveStatus={saveStatus} currentStepId={props.currentStepId} />
     </DispatchCommandContext.Provider>;
 }
-
-// Interface for save hook return value
-interface SaveHookResult {
-    saveStatus: SaveStatus;
-    saveDocument: () => void;
-}
-
-// Custom hook for save functionality
-const useSaveDocument = (editor: BlockNoteEditor, dispatchCommand: any): SaveHookResult => {
-    const [saveStatus, setSaveStatus] = useState<SaveStatus>('idle');
-
-    const saveDocument = useCallback(async () => {
-        // Skip if already saving
-        if (saveStatus === 'saving') return;
-
-        // Get the content from the editor
-        const content = editor.document;
-
-        // Start saving
-        setSaveStatus('saving');
-
-        const saveToServer = async (): Promise<void> => {
-            try {
-                // Simulate API call
-                // const response = await api.saveDocument(content);
-
-                console.log("Saving content:", content);
-
-                const markdownFromBlocks = await editor.blocksToMarkdownLossy();
-                const htmlFromBlocks = await editor.blocksToHTMLLossy();
-
-                await dispatchCommand({
-                    command: 'SaveWorkingDocument',
-                    contentAsBlocknoteJson: content,
-                    contentAsMarkdown: markdownFromBlocks,
-                    contentAsHtml: htmlFromBlocks,
-                });
-
-                // Set to saved when complete
-                setSaveStatus('saved');
-
-                // Reset status after showing checkmark
-                setTimeout(() => {
-                    setSaveStatus('idle');
-                }, 2000);
-            } catch (error) {
-                console.error('Error saving document:', error);
-                setSaveStatus('idle');
-                // Here you could also set an error state and show an error message
-            }
-        };
-
-        await saveToServer();
-    }, [editor, saveStatus]);
-
-    return { saveStatus, saveDocument };
-};
-
-
-// Interface for keyboard shortcuts
-interface ShortcutHandlers {
-    save: () => void;
-}
-
-// Custom hook for keyboard shortcuts
-const useKeyboardShortcuts = (shortcuts: ShortcutHandlers): void => {
-    useEffect(() => {
-        const handleKeyDown = (e: KeyboardEvent): void => {
-            // Check for Cmd+S (Mac) or Ctrl+S (Windows)
-            if ((e.metaKey || e.ctrlKey) && e.key === 's') {
-                e.preventDefault(); // Prevent browser's save dialog
-                shortcuts.save();
-            }
-        };
-
-        // Add event listener
-        document.addEventListener('keydown', handleKeyDown);
-
-        // Remove event listener on cleanup
-        return () => {
-            document.removeEventListener('keydown', handleKeyDown);
-        };
-    }, [shortcuts]);
-};
-
