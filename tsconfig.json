@@ -1,6 +1,30 @@
 {
     "compilerOptions": {
-        "lib": ["es2020", "dom"],
-        "jsx": "react"
+        "lib": [
+            "es2020",
+            "dom"
+        ],
+        "jsx": "react",
+        "allowSyntheticDefaultImports": true,
+        "paths": {
+            "@neos-project/neos-ui-redux-store": [
+                "../../Packages/Application/Neos.Neos.Ui/packages/neos-ui-redux-store"
+            ],
+            "@neos-project/neos-ui-decorators": [
+                "../../Packages/Application/Neos.Neos.Ui/packages/neos-ui-decorators"
+            ],
+            "@neos-project/neos-ui-validators": [
+                "../../Packages/Application/Neos.Neos.Ui/packages/neos-ui-validators"
+            ],
+            "@neos-project/neos-ts-interfaces": [
+                "../../Packages/Application/Neos.Neos.Ui/packages/neos-ts-interfaces"
+            ],
+            "@neos-project/neos-ui-i18n": [
+                "../../Packages/Application/Neos.Neos.Ui/packages/neos-ui-i18n"
+            ],
+            "@neos-project/neos-ui-editors": [
+                "../../Packages/Application/Neos.Neos.Ui/packages/neos-ui-editors"
+            ]
+        }
     }
 }

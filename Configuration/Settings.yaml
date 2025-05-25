@@ -17,6 +17,25 @@ Neos:
                 - 'resource://Wwwision.Neos.ModuleComponents/Public/Scripts/module.js'
                 - 'resource://Sandstorm.ContentWorkflow/Public/built/BackendModule.js'
 
+    Ui:
+      frontendConfiguration:
+        'Sandstorm.ContentWorkflow':
+          'definedWorkflows': '${Neos.Ui.PositionalArraySorter.sort(Configuration.setting(''Sandstorm.ContentWorkflow.workflows''))}'
+      resources:
+        javascript:
+          'Sandstorm.ContentWorkflow':
+            resource: 'resource://Sandstorm.ContentWorkflow/Public/built/ContentModule.js'
+            # esm support²
+            # in case you want to use esbuild's code splitting (ESM only)
+            # or just reference an ESM Plugin, set the type to module
+            # attributes:
+            #   type: module
+
+        # optional if youre using css
+        stylesheets:
+          'Sandstorm.ContentWorkflow':
+            resource: 'resource://Sandstorm.ContentWorkflow/Public/built/ContentModule.css'
+
   Flow:
     object:
       includeClasses:

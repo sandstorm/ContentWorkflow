@@ -4,6 +4,16 @@ Sandstorm:
       'tech_blog_post':
         name: 'Tech Blog Post'
         description: 'Create a technical blog post (possibly deep dive)'
+        creationDialog:
+          elements:
+            'working_title':
+              ui:
+                label: 'Arbeitstitel'
+                editor: 'Neos.Neos/Inspector/Editors/TextFieldEditor'
+                editorOptions:
+                  placeholder: 'Erste Titelidee'
+              validation:
+                'Neos.Neos/Validation/NotEmptyValidator': []
         initialStep: idea
         steps:
           idea:
