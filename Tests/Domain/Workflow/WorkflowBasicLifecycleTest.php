@@ -8,9 +8,9 @@ use Sandstorm\ContentWorkflow\Domain\Workflow\DrivingPorts\ForWorkflow;
 use Sandstorm\ContentWorkflow\Domain\Workflow\Feature\WorkflowLifecycle\Command\AbortWorkflow;
 use Sandstorm\ContentWorkflow\Domain\Workflow\Feature\WorkflowLifecycle\Command\ReopenWorkflow;
 use Sandstorm\ContentWorkflow\Domain\Workflow\Feature\WorkflowLifecycle\Command\StartWorkflowFromScratch;
+use Sandstorm\ContentWorkflow\Domain\Workflow\Feature\WorkflowLifecycle\Dto\WorkflowProperties;
 use Sandstorm\ContentWorkflow\Domain\Workflow\Feature\WorkflowLifecycle\State\WorkflowLifecycleState;
 use Sandstorm\ContentWorkflow\Domain\Workflow\ValueObject\WorkflowId;
-use Sandstorm\ContentWorkflow\Domain\Workflow\ValueObject\WorkflowTitle;
 use Sandstorm\ContentWorkflow\Domain\WorkflowDefinition\Dto\WorkflowDefinition;
 use Sandstorm\ContentWorkflow\Domain\WorkflowDefinition\Dto\WorkflowStepDefinitionCollection;
 use Sandstorm\ContentWorkflow\Domain\WorkflowDefinition\ValueObject\WorkflowDefinitionId;
@@ -40,7 +40,7 @@ class WorkflowBasicLifecycleTest extends UnitTestCase
     {
         $this->workflowApp->handle($this->workflowId, new StartWorkflowFromScratch(
             workflowDefinitionId: WorkflowDefinitionId::fromString('wf1'),
-            workflowTitle: WorkflowTitle::fromString('Blog Post about Event Sourcing'),
+            workflowProperties: WorkflowProperties::fromArray(['title' => 'Blog Post about Event Sourcing']),
         ));
 
         $this->assertEquals($this->workflowApp->getWorkflowState($this->workflowId)->count(), 1, 'Event count mismatch');
@@ -53,13 +53,13 @@ class WorkflowBasicLifecycleTest extends UnitTestCase
     {
         $this->workflowApp->handle($this->workflowId, new StartWorkflowFromScratch(
             workflowDefinitionId: WorkflowDefinitionId::fromString('wf1'),
-            workflowTitle: WorkflowTitle::fromString('Blog Post about Event Sourcing'),
+            workflowProperties: WorkflowProperties::fromArray(['title' => 'Blog Post about Event Sourcing']),
         ));
 
         $this->expectException(\Exception::class);
         $this->workflowApp->handle($this->workflowId, new StartWorkflowFromScratch(
             workflowDefinitionId: WorkflowDefinitionId::fromString('wf1'),
-            workflowTitle: WorkflowTitle::fromString('Blog Post about Event Sourcing'),
+            workflowProperties: WorkflowProperties::fromArray(['title' => 'Blog Post about Event Sourcing']),
         ));
     }
 
@@ -70,7 +70,7 @@ class WorkflowBasicLifecycleTest extends UnitTestCase
     {
         $this->workflowApp->handle($this->workflowId, new StartWorkflowFromScratch(
             workflowDefinitionId: WorkflowDefinitionId::fromString('wf1'),
-            workflowTitle: WorkflowTitle::fromString('Blog Post about Event Sourcing'),
+            workflowProperties: WorkflowProperties::fromArray(['title' => 'Blog Post about Event Sourcing']),
         ));
 
         $this->workflowApp->handle($this->workflowId, new AbortWorkflow());
@@ -89,7 +89,7 @@ class WorkflowBasicLifecycleTest extends UnitTestCase
     {
         $this->workflowApp->handle($this->workflowId, new StartWorkflowFromScratch(
             workflowDefinitionId: WorkflowDefinitionId::fromString('wf1'),
-            workflowTitle: WorkflowTitle::fromString('Blog Post about Event Sourcing'),
+            workflowProperties: WorkflowProperties::fromArray(['title' => 'Blog Post about Event Sourcing']),
         ));
 
         $this->workflowApp->handle($this->workflowId, new AbortWorkflow());
@@ -105,7 +105,7 @@ class WorkflowBasicLifecycleTest extends UnitTestCase
     {
         $this->workflowApp->handle($this->workflowId, new StartWorkflowFromScratch(
             workflowDefinitionId: WorkflowDefinitionId::fromString('wf1'),
-            workflowTitle: WorkflowTitle::fromString('Blog Post about Event Sourcing'),
+            workflowProperties: WorkflowProperties::fromArray(['title' => 'Blog Post about Event Sourcing']),
         ));
 
         $this->workflowApp->handle($this->workflowId, new AbortWorkflow());

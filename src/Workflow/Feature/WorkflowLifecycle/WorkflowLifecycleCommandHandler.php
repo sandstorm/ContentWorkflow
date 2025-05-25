@@ -51,7 +51,7 @@ readonly class WorkflowLifecycleCommandHandler implements CommandHandlerInterfac
         return WorkflowEventsToPersist::with(
             new WorkflowWasStarted(
                 workflowDefinitionId: $command->workflowDefinitionId,
-                workflowTitle: $command->workflowTitle,
+                workflowProperties: $command->workflowProperties,
             )
         );
     }

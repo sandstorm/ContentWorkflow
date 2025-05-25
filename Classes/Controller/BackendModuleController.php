@@ -13,7 +13,6 @@ use Sandstorm\ContentWorkflow\Domain\Workflow\Feature\WorkflowStep\Command\Finis
 use Sandstorm\ContentWorkflow\Domain\Workflow\Feature\WorkflowStep\Command\SaveWorkingDocument;
 use Sandstorm\ContentWorkflow\Domain\Workflow\Feature\WorkflowStep\State\WorkflowStepState;
 use Sandstorm\ContentWorkflow\Domain\Workflow\ValueObject\WorkflowId;
-use Sandstorm\ContentWorkflow\Domain\Workflow\ValueObject\WorkflowTitle;
 use Sandstorm\ContentWorkflow\Domain\WorkflowDefinition\ValueObject\WorkflowDefinitionId;
 use Sandstorm\ContentWorkflow\Factory\WorkflowFactory;
 

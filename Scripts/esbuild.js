@@ -21,7 +21,10 @@ const options = {
     // - eg with `@neos` or `@connect` decorators
     loader: { '.js': 'tsx' },
     outdir: 'Resources/Public/built',
-    alias: extensibilityMap,
+    alias: {
+        ...extensibilityMap,
+        "@neos-project/neos-ui-sagas": "../../Packages/Application/Neos.Neos.Ui/packages/neos-ui-sagas"
+    },
     plugins: [
         cssModules({
             // Add your own or other plugins in the "visitor" section see

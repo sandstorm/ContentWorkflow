@@ -5,8 +5,6 @@ namespace Sandstorm\ContentWorkflow\Domain\Workflow\Feature\WorkflowStep\Command
 
 use Sandstorm\ContentWorkflow\Domain\Workflow\CommandHandler\CommandInterface;
 use Sandstorm\ContentWorkflow\Domain\Workflow\Feature\WorkflowStep\Dto\WorkingDocumentContent;
-use Sandstorm\ContentWorkflow\Domain\Workflow\ValueObject\WorkflowTitle;
-use Sandstorm\ContentWorkflow\Domain\WorkflowDefinition\ValueObject\WorkflowDefinitionId;
 
 readonly class SaveWorkingDocument implements CommandInterface
 {

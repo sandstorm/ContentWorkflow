@@ -35,7 +35,9 @@ Neos:
         stylesheets:
           'Sandstorm.ContentWorkflow':
             resource: 'resource://Sandstorm.ContentWorkflow/Public/built/ContentModule.css'
-
+      changes:
+        types:
+          'Sandstorm.ContentWorkflow:HandleCommand': Sandstorm\ContentWorkflow\Ui\Changes\HandleCommand
   Flow:
     object:
       includeClasses:

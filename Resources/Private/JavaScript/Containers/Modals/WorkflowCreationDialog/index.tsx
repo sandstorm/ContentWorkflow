@@ -62,6 +62,7 @@ function mapStateToProps(state: State, props: { config: PluginConfig }) {
 
 const mapDispatchToProps = {
     cancel: pluginActions.closeWorkflowModal,
+    apply: pluginActions.createWorkflow,
 };
 
 
@@ -174,7 +175,7 @@ class _WorkflowCreationDialog extends PureComponent<WorkflowCreationDialogProps,
             this.setState({ validationErrors, isDirty: true })
         } else {
             const { apply } = this.props
-            apply(transient)
+            apply(this.props.workflowIdToCreate, transient);
             this.setState(defaultState)
         }
     }

@@ -20,14 +20,15 @@ export const defaultState: PluginState = {
 //
 export enum actionTypes {
     START_CREATING_WORKFLOW = '@sandstorm/contentworkflow/UI/START_CREATING_WORKFLOW',
-    CLOSE_WORKFLOW_MODAL = '@sandstorm/contentworkflow/UI/Remote/CLOSE_WORKFLOW_MODAL',
-    CREATE_WORKFLOW = '@sandstorm/contentworkflow/UI/Remote/CREATE_WORKFLOW',
+    CLOSE_WORKFLOW_MODAL = '@sandstorm/contentworkflow/UI/CLOSE_WORKFLOW_MODAL',
+    CREATE_WORKFLOW = '@sandstorm/contentworkflow/UI/CREATE_WORKFLOW',
 }
 
 const startCreatingWorkflow = (workflowId: string) => createAction(actionTypes.START_CREATING_WORKFLOW, {workflowId});
+
 const closeWorkflowModal = () => createAction(actionTypes.CLOSE_WORKFLOW_MODAL);
 
-const createWorkflow = () => createAction(actionTypes.CREATE_WORKFLOW);
+const createWorkflow = (workflowId: string, properties: Record<string,any>) => createAction(actionTypes.CREATE_WORKFLOW, {workflowId, properties});
 
 export const pluginActions = {
     startCreatingWorkflow,
