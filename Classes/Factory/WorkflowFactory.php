@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Sandstorm\ContentWorkflow\Factory;
 
 use Doctrine\DBAL\Connection;
+use Neos\ContentRepository\Domain\Service\NodeTypeManager;
 use Neos\EventStore\DoctrineAdapter\DoctrineEventStore;
 use Neos\Flow\Annotations as Flow;
 use Sandstorm\ContentWorkflow\Domain\Workflow\CoreWorkflowApp;
@@ -20,7 +21,8 @@ class WorkflowFactory
     protected array $workflowsConfiguration;
 
     public function __construct(
-        private Connection $connection
+        private Connection $connection,
+        private readonly NodeTypeManager $nodeTypeManager,
     )
     {
         $this->eventStore = new DoctrineEventStore($this->connection, 'sandstorm_contentworkflow_events');
@@ -30,7 +32,7 @@ class WorkflowFactory
     {
         return new CoreWorkflowApp(
             $this->eventStore,
-            WorkflowDefinitionApp::createFromArray($this->workflowsConfiguration)
+            new WorkflowDefinitionApp($this->nodeTypeManager)
         );
     }
 

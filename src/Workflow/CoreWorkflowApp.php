@@ -9,6 +9,7 @@ use Neos\EventStore\EventStoreInterface;
 use Neos\EventStore\Helper\InMemoryEventStore;
 use Neos\EventStore\Model\EventStream\ExpectedVersion;
 use Sandstorm\ContentWorkflow\Domain\Workflow\DrivingPorts\ForWorkflow;
+use Sandstorm\ContentWorkflow\Domain\Workflow\EventStore\WorkflowEventInterface;
 use Sandstorm\ContentWorkflow\Domain\Workflow\EventStore\WorkflowEvents;
 use Sandstorm\ContentWorkflow\Domain\Workflow\EventStore\WorkflowEventStore;
 use Sandstorm\ContentWorkflow\Domain\Workflow\Feature\WorkflowLifecycle\Event\WorkflowWasAborted;
@@ -67,10 +68,16 @@ final class CoreWorkflowApp implements DrivingPorts\ForWorkflow
         return $this->workflowEventStore->hasWorkflow($workflowId);
     }
 
-    public function getWorkflowState(WorkflowId $workflowId): WorkflowEvents
+    public function stateFor(WorkflowId $workflowId): WorkflowProjectionState
     {
         [$state,] = $this->workflowEventStore->getWorkflowStateAndLastVersion($workflowId);
-        return $state;
+        return new WorkflowProjectionState($this->workflowDefinitionApp, $state);
+    }
+
+
+    public function emptyState(): WorkflowProjectionState
+    {
+        return new WorkflowProjectionState($this->workflowDefinitionApp, WorkflowEvents::fromArray([]));
     }
 
     public function handle(WorkflowId $workflowId, CommandHandler\CommandInterface $command): void
@@ -84,4 +91,5 @@ final class CoreWorkflowApp implements DrivingPorts\ForWorkflow
     {
         return $this->workflowDefinitionApp;
     }
+
 }

@@ -6,6 +6,7 @@ namespace Sandstorm\ContentWorkflow\Domain\Workflow\DrivingPorts;
 use Sandstorm\ContentWorkflow\Domain\Workflow\CommandHandler\CommandInterface;
 use Sandstorm\ContentWorkflow\Domain\Workflow\EventStore\WorkflowEvents;
 use Sandstorm\ContentWorkflow\Domain\Workflow\ValueObject\WorkflowId;
+use Sandstorm\ContentWorkflow\Domain\Workflow\WorkflowProjectionState;
 use Sandstorm\ContentWorkflow\Domain\WorkflowDefinition\DrivingPorts\ForWorkflowDefinition;
 
 /**
@@ -19,7 +20,8 @@ interface ForWorkflow
 {
     public function hasWorkflow(WorkflowId $workflowId): bool;
 
-    public function getWorkflowState(WorkflowId $workflowId): WorkflowEvents;
+    public function stateFor(WorkflowId $workflowId): WorkflowProjectionState;
+    public function emptyState(): WorkflowProjectionState;
 
     public function handle(WorkflowId $workflowId, CommandInterface $command): void;
 

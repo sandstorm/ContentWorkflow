@@ -1,10 +1,15 @@
 {
+    "include": ["Resources/Private/JavaScript/**/*"],
+    "exclude": ["node_modules", "../../Packages/Application/Neos.Neos.Ui/**/*"],
     "compilerOptions": {
+        "strict": true,
         "lib": [
             "es2020",
             "dom"
         ],
         "jsx": "react",
+        "module": "ES2022",
+        "moduleResolution": "bundler",
         "allowSyntheticDefaultImports": true,
         "paths": {
             "@neos-project/neos-ui-redux-store": [

@@ -2,44 +2,38 @@
 
 namespace Sandstorm\ContentWorkflow\Domain\WorkflowDefinition;
 
+use Neos\ContentRepository\Domain\NodeType\NodeTypeName;
+use Neos\ContentRepository\Domain\Service\NodeTypeManager;
 use Sandstorm\ContentWorkflow\Domain\WorkflowDefinition\DrivingPorts\ForWorkflowDefinition;
 use Sandstorm\ContentWorkflow\Domain\WorkflowDefinition\Dto\WorkflowDefinition;
 use Sandstorm\ContentWorkflow\Domain\WorkflowDefinition\ValueObject\WorkflowDefinitionId;
 
 class WorkflowDefinitionApp implements ForWorkflowDefinition
 {
-    /**
-     * @var array<string,WorkflowDefinition>
-     */
-    private array $definitions;
-
     public function __construct(
-        WorkflowDefinition ...$workflowDefinitions
+        private readonly NodeTypeManager $nodeTypeManager,
     )
     {
-        $definitions = [];
-        foreach ($workflowDefinitions as $workflowDefinition) {
-            $definitions[$workflowDefinition->id->value] = $workflowDefinition;
+    }
+    public function getDefinitionOrThrow(NodeTypeName $nodeTypeName, WorkflowDefinitionId $workflowDefinitionId): WorkflowDefinition
+    {
+        $nodeType = $this->nodeTypeManager->getNodeType($nodeTypeName->getValue());
+        $arr = $nodeType->getConfiguration('options.workflows.' . $workflowDefinitionId->value);
+        return WorkflowDefinition::fromArray($workflowDefinitionId, $arr);
+    }
+
+    /**
+     * @return WorkflowDefinition[]
+     */
+    public function getDefinitions(NodeTypeName $nodeTypeName): array
+    {
+        $nodeType = $this->nodeTypeManager->getNodeType($nodeTypeName->getValue());
+        $arr = $nodeType->getConfiguration('options.workflows');
+        $result = [];
+        foreach ($arr as $id => $def) {
+            $result[] = WorkflowDefinition::fromArray(WorkflowDefinitionId::fromString($id), $def);
         }
-        $this->definitions = $definitions;
-    }
 
-    public static function createFromArray(array $definitions): self
-    {
-        $converted = [];
-        foreach ($definitions as $definitionId => $definition) {
-            $converted[] = WorkflowDefinition::fromArray(WorkflowDefinitionId::fromString($definitionId), $definition);
-        }
-        return new self(...$converted);
-    }
-
-    public function getWorkflowDefinitionOrThrow(WorkflowDefinitionId $definitionId): WorkflowDefinition
-    {
-        return $this->definitions[$definitionId->value] ?? throw new \InvalidArgumentException("No such workflow definition: $definitionId");
-    }
-
-    public function getAll(): iterable
-    {
-        return array_values($this->definitions);
+        return $result;
     }
 }

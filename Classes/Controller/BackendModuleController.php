@@ -59,7 +59,7 @@ class BackendModuleController extends AbstractModuleController
         $this->view->assign('csrfToken', $this->securityContext->getCsrfProtectionToken());
         $this->view->assign('dispatchCommandFromJsEndpoint', $this->uriBuilder->uriFor('dispatchCommandFromJs', ['workflowId' => $workflowId->value]));
         $this->view->assign('css', $this->resourceManager->getPublicPackageResourceUri('Sandstorm.ContentWorkflow', 'built/BackendModule.css'));
-        $this->view->assign('currentStepId', WorkflowStepState::currentStep($state, $this->workflowApp->definitions())->id);
+        $this->view->assign('currentStepId', WorkflowStepState::currentStepOrNull($state, $this->workflowApp->definitions())->id);
         $this->view->assign('currentWorkingDocument', WorkflowStepState::currentWorkingDocument($state));
     }
 

@@ -46,12 +46,13 @@ readonly class WorkflowLifecycleCommandHandler implements CommandHandlerInterfac
         if ($state->count() !== 0) {
             throw new \Exception("Cannot start the workflow from scratch, because it already has events");
         }
-        $workflowDefinition = $this->workflowDefinitionApp->getWorkflowDefinitionOrThrow($command->workflowDefinitionId);
+        $workflowDefinition = $this->workflowDefinitionApp->getDefinitionOrThrow($command->nodeTypeName, $command->workflowDefinitionId);
 
         return WorkflowEventsToPersist::with(
             new WorkflowWasStarted(
+                nodeTypeName: $command->nodeTypeName,
                 workflowDefinitionId: $command->workflowDefinitionId,
-                workflowProperties: $command->workflowProperties,
+                node: $command->node,
             )
         );
     }

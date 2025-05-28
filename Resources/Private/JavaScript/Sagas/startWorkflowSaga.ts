@@ -2,7 +2,7 @@ import { takeLatest, take, select, call, put, race } from 'redux-saga/effects'
 import {
     pluginActions as localActions,
     actionTypes as localActionTypes,
-    selectors as localSelectors,
+    pluginSelectors as localSelectors,
 } from '../Redux/index'
 import { actions, selectors } from '@neos-project/neos-ui-redux-store'
 import {applySaveHooksForTransientValuesMap} from '@neos-project/neos-ui-sagas/src/Changes/saveHooks';

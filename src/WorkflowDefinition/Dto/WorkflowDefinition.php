@@ -9,12 +9,15 @@ use Sandstorm\ContentWorkflow\Domain\WorkflowDefinition\ValueObject\WorkflowStep
 readonly final class WorkflowDefinition implements \Stringable
 {
     public function __construct(
-        public WorkflowDefinitionId             $id,
-        public string                           $name,
-        public string                           $description,
-        public WorkflowStepDefinitionCollection $stepDefinitions,
+        public WorkflowDefinitionId    $id,
+        public string                  $name,
+        public string                  $description,
+        public WorkflowStepDefinitions $stepDefinitions,
     )
     {
+        foreach ($this->stepDefinitions as $stepDefinition) {
+            $stepDefinition->resolveNextSteps($this->stepDefinitions);
+        }
     }
 
     public static function fromArray(WorkflowDefinitionId $id, array $in): self
@@ -28,7 +31,7 @@ readonly final class WorkflowDefinition implements \Stringable
                 $id,
                 $in['name'],
                 $in['description'],
-                new WorkflowStepDefinitionCollection($steps),
+                new WorkflowStepDefinitions($steps),
             );
         } catch (\Throwable $e) {
             throw new \InvalidArgumentException($id . ': Invalid workflow definition. See nested exception for details.', 0, $e);
@@ -39,5 +42,15 @@ readonly final class WorkflowDefinition implements \Stringable
     public function __toString()
     {
         return '[WorkflowDefinition: ' . $this->id->value . ']';
+    }
+
+    public function jsonSerializeForUi()
+    {
+        return [
+            'id' => $this->id->jsonSerialize(),
+            'name' => $this->name,
+            'description' => $this->description,
+            'steps' => $this->stepDefinitions->jsonSerializeForUi(),
+        ];
     }
 }

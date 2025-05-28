@@ -11,31 +11,33 @@ use Sandstorm\ContentWorkflow\Domain\Workflow\Feature\WorkflowStep\State\Dto\Ste
 use Sandstorm\ContentWorkflow\Domain\WorkflowDefinition\DrivingPorts\ForWorkflowDefinition;
 use Sandstorm\ContentWorkflow\Domain\WorkflowDefinition\Dto\WorkflowStepDefinition;
 
-class WorkflowStepState
+trait WorkflowStepState
 {
 
-    static function currentStep(WorkflowEvents $state, ForWorkflowDefinition $definitions): WorkflowStepDefinition
+    function currentStepOrNull(): ?WorkflowStepDefinition
     {
-        $definitionId = WorkflowLifecycleState::definitionId($state);
-        $definition = $definitions->getWorkflowDefinitionOrThrow($definitionId);
-
-        $finishedSteps = $state->findAllOfType(StepFinished::class);
-        foreach ($definition->stepDefinitions as $stepDefinition) {
-            $alreadyExecuted = $finishedSteps->findLastOrNullWhere(fn(StepFinished $e) => $e->stepId->equals($stepDefinition->id)) !== null;
-            if (!$alreadyExecuted) {
-                return $stepDefinition;
+        try {
+            $definition = $this->workflowDefinition();
+            $finishedSteps = $this->events->findAllOfType(StepFinished::class);
+            foreach ($definition->stepDefinitions as $stepDefinition) {
+                $alreadyExecuted = $finishedSteps->findLastOrNullWhere(fn(StepFinished $e) => $e->stepId->equals($stepDefinition->id)) !== null;
+                if (!$alreadyExecuted) {
+                    return $stepDefinition;
+                }
             }
+        } catch (\Throwable $e) {
+            // Error
         }
+        return null;
     }
 
     /**
      * @return StepWithState[]
      */
-    static function stepListWithCurrentState(WorkflowEvents $state, ForWorkflowDefinition $definitions): array
+    function stepListWithCurrentState(): array
     {
-        $definitionId = WorkflowLifecycleState::definitionId($state);
-        $definition = $definitions->getWorkflowDefinitionOrThrow($definitionId);
-        $finishedSteps = $state->findAllOfType(StepFinished::class);
+        $definition = $this->workflowDefinition();
+        $finishedSteps = $this->events->findAllOfType(StepFinished::class);
 
         $steps = [];
         foreach ($definition->stepDefinitions as $stepDefinition) {
@@ -48,8 +50,8 @@ class WorkflowStepState
         return $steps;
     }
 
-    static public function currentWorkingDocument(WorkflowEvents $state): ?WorkingDocumentContent
+    /*static public function currentWorkingDocument(WorkflowEvents $state): ?WorkingDocumentContent
     {
         return $state->findLastOrNull(WorkingDocumentSaved::class)?->content;
-    }
+    }*/
 }

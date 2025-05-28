@@ -3,12 +3,15 @@
         "@neos-project/neos-ui-extensibility": "^8.3.13",
         "@neos-project/positional-array-sorter": "^8.3.13",
         "@neos-project/react-ui-components": "^8.3.13",
+        "@types/redux-saga": "^0.9.31",
         "esbuild-plugin-lightningcss-modules": "^0.1.2",
         "immer": "^10.1.1",
         "lodash.memoize": "^4.1.2",
         "react": "^16.12.0",
         "react-dom": "^16.12.0",
-        "typesafe-actions": "^5.1.0"
+        "typesafe-actions": "^5.1.0",
+        "typescript": "^5.8.3",
+        "zod": "^3.25.28"
     },
     "peerDependencies": {
         "react-redux": "^7.1.3"
