@@ -46,14 +46,20 @@ class _WorkflowControlView extends PureComponent<WorkflowControlViewProps> {
     }
 
     private renderRunningWorkflow() {
-        const { currentWorkflowName, currentWorkflowStepName, nextWorkflowStepButtons } = this.props.workflowUiStatus.workflowControl
+        const {
+            currentWorkflowName,
+            currentWorkflowStepName,
+            currentWorkflowStepDescription,
+            nextWorkflowStepButtons
+        } = this.props.workflowUiStatus.workflowControl
         const entries = nextWorkflowStepButtons.map((btnDef) => {
             return <Button key={btnDef.id}
-                           onClick={this.handleNewWorkflowClick(btnDef.id)}>{btnDef.label}</Button>
+                           onClick={this.handleClickWorkflowStep(btnDef.id)}>{btnDef.label}</Button>
         })
         return (
             <div>
-                Running Workflow {currentWorkflowName}: {currentWorkflowStepName}
+                {currentWorkflowName} <br/>
+                <b>{currentWorkflowStepName}</b>: {currentWorkflowStepDescription}<br />
                 {entries}
             </div>
         )
@@ -72,6 +78,21 @@ class _WorkflowControlView extends PureComponent<WorkflowControlViewProps> {
                 {entries}
             </div>
         )
+    }
+
+    handleClickWorkflowStep = (nextStepId: string) => () => {
+        const workflowId = this.props.value;
+        this.props.commit(workflowId, {
+            'Sandstorm.ContentWorkflow:Hook.ExecuteCommand': {
+                node: this.props.focusedNode.contextPath,
+                command: 'TransitionToStep',
+                commandPayload: {
+                    workflowId,
+                    nextStepId,
+                },
+            },
+        })
+        this.props.apply()
     }
 
     handleNewWorkflowClick = (workflowDefinitionId: string) => () => {

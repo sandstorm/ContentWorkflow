@@ -6,10 +6,13 @@ namespace Sandstorm\ContentWorkflow\Domain\Workflow\Feature\WorkflowStep\Command
 use Sandstorm\ContentWorkflow\Domain\Workflow\CommandHandler\CommandInterface;
 use Sandstorm\ContentWorkflow\Domain\WorkflowDefinition\ValueObject\WorkflowStepId;
 
-readonly class FinishStep implements CommandInterface
+/**
+ * Finish one step and transition to one of the next ones.
+ */
+readonly class TransitionToStep implements CommandInterface
 {
     public function __construct(
-        public WorkflowStepId $stepId,
+        public WorkflowStepId $nextStepId,
     )
     {
     }
@@ -17,7 +20,7 @@ readonly class FinishStep implements CommandInterface
     public static function fromArray(array $body): self
     {
         return new self(
-            stepId: WorkflowStepId::fromString($body['stepId']),
+            nextStepId: WorkflowStepId::fromString($body['nextStepId']),
         );
     }
 }

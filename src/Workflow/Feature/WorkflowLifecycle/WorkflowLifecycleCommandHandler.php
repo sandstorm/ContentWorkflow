@@ -5,7 +5,6 @@ namespace Sandstorm\ContentWorkflow\Domain\Workflow\Feature\WorkflowLifecycle;
 
 use Sandstorm\ContentWorkflow\Domain\Workflow\CommandHandler\CommandHandlerInterface;
 use Sandstorm\ContentWorkflow\Domain\Workflow\CommandHandler\CommandInterface;
-use Sandstorm\ContentWorkflow\Domain\Workflow\EventStore\WorkflowEvents;
 use Sandstorm\ContentWorkflow\Domain\Workflow\EventStore\WorkflowEventsToPersist;
 use Sandstorm\ContentWorkflow\Domain\Workflow\Feature\WorkflowLifecycle\Command\AbortWorkflow;
 use Sandstorm\ContentWorkflow\Domain\Workflow\Feature\WorkflowLifecycle\Command\ReopenWorkflow;
@@ -13,7 +12,7 @@ use Sandstorm\ContentWorkflow\Domain\Workflow\Feature\WorkflowLifecycle\Command\
 use Sandstorm\ContentWorkflow\Domain\Workflow\Feature\WorkflowLifecycle\Event\WorkflowWasAborted;
 use Sandstorm\ContentWorkflow\Domain\Workflow\Feature\WorkflowLifecycle\Event\WorkflowWasReopened;
 use Sandstorm\ContentWorkflow\Domain\Workflow\Feature\WorkflowLifecycle\Event\WorkflowWasStarted;
-use Sandstorm\ContentWorkflow\Domain\Workflow\Feature\WorkflowLifecycle\State\WorkflowLifecycleState;
+use Sandstorm\ContentWorkflow\Domain\Workflow\WorkflowProjectionState;
 use Sandstorm\ContentWorkflow\Domain\WorkflowDefinition\DrivingPorts\ForWorkflowDefinition;
 
 readonly class WorkflowLifecycleCommandHandler implements CommandHandlerInterface
@@ -32,7 +31,7 @@ readonly class WorkflowLifecycleCommandHandler implements CommandHandlerInterfac
             || $command instanceof ReopenWorkflow;
     }
 
-    public function handle(CommandInterface $command, WorkflowEvents $state): WorkflowEventsToPersist
+    public function handle(CommandInterface $command, WorkflowProjectionState $state): WorkflowEventsToPersist
     {
         return match ($command::class) {
             StartWorkflowFromScratch::class => $this->handleStartFromScratchWorkflow($command, $state),
@@ -41,9 +40,9 @@ readonly class WorkflowLifecycleCommandHandler implements CommandHandlerInterfac
         };
     }
 
-    private function handleStartFromScratchWorkflow(StartWorkflowFromScratch $command, WorkflowEvents $state): WorkflowEventsToPersist
+    private function handleStartFromScratchWorkflow(StartWorkflowFromScratch $command, WorkflowProjectionState $state): WorkflowEventsToPersist
     {
-        if ($state->count() !== 0) {
+        if ($state->events->count() !== 0) {
             throw new \Exception("Cannot start the workflow from scratch, because it already has events");
         }
         $workflowDefinition = $this->workflowDefinitionApp->getDefinitionOrThrow($command->nodeTypeName, $command->workflowDefinitionId);
@@ -53,21 +52,22 @@ readonly class WorkflowLifecycleCommandHandler implements CommandHandlerInterfac
                 nodeTypeName: $command->nodeTypeName,
                 workflowDefinitionId: $command->workflowDefinitionId,
                 node: $command->node,
+                initialStep: $workflowDefinition->initialStep->id
             )
         );
     }
 
-    private function handleAbortWorkflow(AbortWorkflow $command, WorkflowEvents $state): WorkflowEventsToPersist
+    private function handleAbortWorkflow(AbortWorkflow $command, WorkflowProjectionState $state): WorkflowEventsToPersist
     {
-        if (!WorkflowLifecycleState::isRunning($state)) {
+        if (!$state->isRunning()) {
             throw new \Exception("Cannot abort the workflow, because it was already aborted");
         }
         return WorkflowEventsToPersist::with(new WorkflowWasAborted());
     }
 
-    private function handleReopenWorkflow(ReopenWorkflow $command, WorkflowEvents $state): WorkflowEventsToPersist
+    private function handleReopenWorkflow(ReopenWorkflow $command, WorkflowProjectionState $state): WorkflowEventsToPersist
     {
-        if (WorkflowLifecycleState::isRunning($state)) {
+        if ($state->isRunning()) {
             throw new \Exception("Cannot reopen the workflow, because it was already open");
         }
         return WorkflowEventsToPersist::with(new WorkflowWasReopened());

@@ -7,10 +7,11 @@ use Sandstorm\ContentWorkflow\Domain\Workflow\EventStore\WorkflowEventInterface;
 use Sandstorm\ContentWorkflow\Domain\Workflow\Feature\WorkflowStep\Dto\WorkingDocumentContent;
 use Sandstorm\ContentWorkflow\Domain\WorkflowDefinition\ValueObject\WorkflowStepId;
 
-readonly class StepFinished implements WorkflowEventInterface
+readonly class TransitionedToStep implements WorkflowEventInterface
 {
     public function __construct(
-        public WorkflowStepId $stepId,
+        public WorkflowStepId $completedStepId,
+        public WorkflowStepId $nextStepId,
     )
     {
     }
@@ -18,14 +19,16 @@ readonly class StepFinished implements WorkflowEventInterface
     public static function fromArray(array $values): self
     {
         return new self(
-            stepId: WorkflowStepId::fromString($values['stepId']),
+            completedStepId: WorkflowStepId::fromString($values['completedStepId']),
+            nextStepId: WorkflowStepId::fromString($values['nextStepId']),
         );
     }
 
     public function jsonSerialize(): array
     {
         return [
-            'stepId' => $this->stepId->value,
+            'completedStepId' => $this->completedStepId->value,
+            'nextStepId' => $this->nextStepId->value,
         ];
     }
 }

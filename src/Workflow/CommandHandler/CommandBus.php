@@ -7,6 +7,7 @@ namespace Sandstorm\ContentWorkflow\Domain\Workflow\CommandHandler;
 
 use Sandstorm\ContentWorkflow\Domain\Workflow\EventStore\WorkflowEvents;
 use Sandstorm\ContentWorkflow\Domain\Workflow\EventStore\WorkflowEventsToPersist;
+use Sandstorm\ContentWorkflow\Domain\Workflow\WorkflowProjectionState;
 
 /**
  * Implementation Detail of {@see CoreGameLogicApp::handle}, which does the command dispatching to the different
@@ -32,10 +33,10 @@ final readonly class CommandBus
      * but do not do the publishing themselves
      *
      * @param CommandInterface $command
-     * @param WorkflowEvents $state
+     * @param WorkflowProjectionState $state
      * @return WorkflowEventsToPersist
      */
-    public function handle(CommandInterface $command, WorkflowEvents $state): WorkflowEventsToPersist
+    public function handle(CommandInterface $command, WorkflowProjectionState $state): WorkflowEventsToPersist
     {
         // multiple handlers must not handle the same command
         foreach ($this->handlers as $handler) {

@@ -16,7 +16,7 @@ use Sandstorm\ContentWorkflow\Domain\Workflow\Feature\WorkflowLifecycle\Event\Wo
 use Sandstorm\ContentWorkflow\Domain\Workflow\Feature\WorkflowLifecycle\Event\WorkflowWasReopened;
 use Sandstorm\ContentWorkflow\Domain\Workflow\Feature\WorkflowLifecycle\Event\WorkflowWasStarted;
 use Sandstorm\ContentWorkflow\Domain\Workflow\Feature\WorkflowLifecycle\WorkflowLifecycleCommandHandler;
-use Sandstorm\ContentWorkflow\Domain\Workflow\Feature\WorkflowStep\Event\StepFinished;
+use Sandstorm\ContentWorkflow\Domain\Workflow\Feature\WorkflowStep\Event\TransitionedToStep;
 use Sandstorm\ContentWorkflow\Domain\Workflow\Feature\WorkflowStep\Event\WorkingDocumentSaved;
 use Sandstorm\ContentWorkflow\Domain\Workflow\Feature\WorkflowStep\WorkflowStepCommandHandler;
 use Sandstorm\ContentWorkflow\Domain\Workflow\ValueObject\WorkflowId;
@@ -53,13 +53,13 @@ final class CoreWorkflowApp implements DrivingPorts\ForWorkflow
             WorkflowWasReopened::class,
 
             WorkingDocumentSaved::class,
-            StepFinished::class,
+            TransitionedToStep::class,
         ]);
         $this->workflowEventStore = new WorkflowEventStore($eventStore, $eventNormalizer);
 
         $this->commandBus = new CommandHandler\CommandBus(
             new WorkflowLifecycleCommandHandler($workflowDefinitionApp),
-            new WorkflowStepCommandHandler($workflowDefinitionApp),
+            new WorkflowStepCommandHandler(),
         );
     }
 
@@ -70,8 +70,8 @@ final class CoreWorkflowApp implements DrivingPorts\ForWorkflow
 
     public function stateFor(WorkflowId $workflowId): WorkflowProjectionState
     {
-        [$state,] = $this->workflowEventStore->getWorkflowStateAndLastVersion($workflowId);
-        return new WorkflowProjectionState($this->workflowDefinitionApp, $state);
+        [$events,] = $this->workflowEventStore->getEventsAndLastVersionForWorkflow($workflowId);
+        return new WorkflowProjectionState($this->workflowDefinitionApp, $events);
     }
 
 
@@ -82,7 +82,8 @@ final class CoreWorkflowApp implements DrivingPorts\ForWorkflow
 
     public function handle(WorkflowId $workflowId, CommandHandler\CommandInterface $command): void
     {
-        [$state, $version] = $this->workflowEventStore->getWorkflowStateAndLastVersion($workflowId);
+        [$events, $version] = $this->workflowEventStore->getEventsAndLastVersionForWorkflow($workflowId);
+        $state = new WorkflowProjectionState($this->workflowDefinitionApp, $events);
         $eventsToPublish = $this->commandBus->handle($command, $state);
         $this->workflowEventStore->commit($workflowId, $eventsToPublish, $version === null ? ExpectedVersion::NO_STREAM() : ExpectedVersion::fromVersion($version));
     }

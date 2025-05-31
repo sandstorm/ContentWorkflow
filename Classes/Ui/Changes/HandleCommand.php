@@ -13,9 +13,11 @@ use Sandstorm\ContentWorkflow\Domain\Workflow\DrivingPorts\ForWorkflow;
 use Sandstorm\ContentWorkflow\Domain\Workflow\Feature\WorkflowLifecycle\Command\StartWorkflowFromScratch;
 use Sandstorm\ContentWorkflow\Domain\Workflow\Feature\WorkflowLifecycle\Dto\NodeConnection;
 use Sandstorm\ContentWorkflow\Domain\Workflow\Feature\WorkflowLifecycle\Dto\WorkflowProperties;
+use Sandstorm\ContentWorkflow\Domain\Workflow\Feature\WorkflowStep\Command\TransitionToStep;
 use Sandstorm\ContentWorkflow\Domain\Workflow\ValueObject\WorkflowId;
 use Sandstorm\ContentWorkflow\Domain\Workflow\ValueObject\WorkflowTitle;
 use Sandstorm\ContentWorkflow\Domain\WorkflowDefinition\ValueObject\WorkflowDefinitionId;
+use Sandstorm\ContentWorkflow\Domain\WorkflowDefinition\ValueObject\WorkflowStepId;
 use Sandstorm\ContentWorkflow\Factory\WorkflowFactory;
 use Sandstorm\ContentWorkflow\Ui\DataSource\Dto\WorkflowUiStatus;
 use Sandstorm\ContentWorkflow\Ui\Feedback\WorkflowStateUpdatedFeedback;
@@ -80,6 +82,13 @@ class HandleCommand implements ChangeInterface
                 WorkflowDefinitionId::fromString($this->commandPayload['workflowDefinitionId']),
                 NodeConnection::fromNode($this->subject),
             ));
+        } elseif ($this->commandId === 'TransitionToStep') {
+            $workflowId = WorkflowId::fromString($this->commandPayload['workflowId']);
+            $this->workflowApp->handle($workflowId, new TransitionToStep(
+                WorkflowStepId::fromString($this->commandPayload['nextStepId']),
+            ));
+        } else {
+            throw new \RuntimeException('Command ' . $this->commandId . ' not found.');
         }
 
         $this->feedbackCollection->add(

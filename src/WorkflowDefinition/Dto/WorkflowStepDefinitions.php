@@ -41,9 +41,4 @@ readonly final class WorkflowStepDefinitions implements \IteratorAggregate
         }
         throw new \RuntimeException("No item with id $stepId found");
     }
-
-    public function jsonSerializeForUi(): array
-    {
-        return array_map(fn(WorkflowStepDefinition $def) => $def->jsonSerializeForUi(), $this->items);
-    }
 }

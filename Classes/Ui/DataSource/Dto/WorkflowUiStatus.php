@@ -8,6 +8,7 @@ use Neos\Flow\Annotations as Flow;
 use Sandstorm\ContentWorkflow\Domain\Workflow\DrivingPorts\ForWorkflow;
 use Sandstorm\ContentWorkflow\Domain\Workflow\ValueObject\WorkflowId;
 use Sandstorm\ContentWorkflow\Domain\WorkflowDefinition\Dto\WorkflowDefinition;
+use Sandstorm\ContentWorkflow\Domain\WorkflowDefinition\Dto\WorkflowStepDefinition;
 
 #[Flow\Proxy(false)]
 final readonly class WorkflowUiStatus implements \JsonSerializable
@@ -41,6 +42,14 @@ final readonly class WorkflowUiStatus implements \JsonSerializable
                 $startWorkflowButtons[] = new Button(
                     id: $definition->id->value,
                     label: $definition->name,
+                );
+            }
+        } else {
+            foreach ($state->currentStepOrNull()->nextSteps as $nextStep) {
+                assert($nextStep instanceof WorkflowStepDefinition);
+                $nextWorkflowStepButtons[] = new Button(
+                    id: $nextStep->id->value,
+                    label: $nextStep->name,
                 );
             }
         }

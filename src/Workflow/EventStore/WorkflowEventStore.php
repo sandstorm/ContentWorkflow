@@ -37,7 +37,7 @@ final readonly class WorkflowEventStore
     /**
      * @return array{0: WorkflowEvents, 1: Version|null}
      */
-    public function getWorkflowStateAndLastVersion(WorkflowId $workflowId): array
+    public function getEventsAndLastVersionForWorkflow(WorkflowId $workflowId): array
     {
         $WorkflowEvents = [];
         $version = null;

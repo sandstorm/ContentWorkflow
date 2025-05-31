@@ -9,7 +9,7 @@ use Neos\Fusion\View\FusionView;
 use Neos\Neos\Controller\Module\AbstractModuleController;
 use Sandstorm\ContentWorkflow\Domain\Workflow\DrivingPorts\ForWorkflow;
 use Sandstorm\ContentWorkflow\Domain\Workflow\Feature\WorkflowLifecycle\Command\StartWorkflowFromScratch;
-use Sandstorm\ContentWorkflow\Domain\Workflow\Feature\WorkflowStep\Command\FinishStep;
+use Sandstorm\ContentWorkflow\Domain\Workflow\Feature\WorkflowStep\Command\TransitionToStep;
 use Sandstorm\ContentWorkflow\Domain\Workflow\Feature\WorkflowStep\Command\SaveWorkingDocument;
 use Sandstorm\ContentWorkflow\Domain\Workflow\Feature\WorkflowStep\State\WorkflowStepState;
 use Sandstorm\ContentWorkflow\Domain\Workflow\ValueObject\WorkflowId;
@@ -72,7 +72,7 @@ class BackendModuleController extends AbstractModuleController
                 $this->workflowApp->handle($workflowId, SaveWorkingDocument::fromArray($body));
                 break;
             case 'FinishCurrentStep':
-                $this->workflowApp->handle($workflowId, FinishStep::fromArray($body));
+                $this->workflowApp->handle($workflowId, TransitionToStep::fromArray($body));
                 break;
             default:
                 throw new \Exception('Unknown command: ' . $body['command']);

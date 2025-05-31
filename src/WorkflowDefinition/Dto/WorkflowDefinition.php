@@ -13,6 +13,7 @@ readonly final class WorkflowDefinition implements \Stringable
         public string                  $name,
         public string                  $description,
         public WorkflowStepDefinitions $stepDefinitions,
+        public WorkflowStepDefinition  $initialStep
     )
     {
         foreach ($this->stepDefinitions as $stepDefinition) {
@@ -27,11 +28,14 @@ readonly final class WorkflowDefinition implements \Stringable
             foreach ($in['steps'] as $key => $inStep) {
                 $steps[] = WorkflowStepDefinition::fromArray(WorkflowStepId::fromString($key), $inStep);
             }
+            $stepDefinitions = new WorkflowStepDefinitions($steps);
+            $initialStep = $stepDefinitions->find(WorkflowStepId::fromString($in['initialStep']));
             return new self(
                 $id,
                 $in['name'],
                 $in['description'],
-                new WorkflowStepDefinitions($steps),
+                $stepDefinitions,
+                $initialStep,
             );
         } catch (\Throwable $e) {
             throw new \InvalidArgumentException($id . ': Invalid workflow definition. See nested exception for details.', 0, $e);
@@ -42,15 +46,5 @@ readonly final class WorkflowDefinition implements \Stringable
     public function __toString()
     {
         return '[WorkflowDefinition: ' . $this->id->value . ']';
-    }
-
-    public function jsonSerializeForUi()
-    {
-        return [
-            'id' => $this->id->jsonSerialize(),
-            'name' => $this->name,
-            'description' => $this->description,
-            'steps' => $this->stepDefinitions->jsonSerializeForUi(),
-        ];
     }
 }

@@ -7,14 +7,14 @@ use Sandstorm\ContentWorkflow\Domain\WorkflowDefinition\ValueObject\WorkflowStep
 
 final class WorkflowStepDefinition
 {
-    public readonly WorkflowStepDefinitions $resolvedNextSteps;
+    public readonly WorkflowStepDefinitions $nextSteps;
 
     public function __construct(
         public WorkflowStepId  $id,
         public string          $name,
         public string          $description,
         public array           $ui,
-        public WorkflowStepIds $nextSteps,
+        public WorkflowStepIds $nextStepIds,
     )
     {
     }
@@ -33,20 +33,9 @@ final class WorkflowStepDefinition
     public function resolveNextSteps(WorkflowStepDefinitions $stepDefinitions)
     {
         $resolved = [];
-        foreach ($this->nextSteps as $nextStepId) {
+        foreach ($this->nextStepIds as $nextStepId) {
             $resolved[] = $stepDefinitions->find($nextStepId);
         }
-        $this->resolvedNextSteps = new WorkflowStepDefinitions($resolved);
-    }
-
-    public function jsonSerializeForUi(): array
-    {
-        return [
-            'id' => $this->id->jsonSerialize(),
-            'name' => $this->name,
-            'description' => $this->description,
-            'ui' => $this->ui,
-            'nextSteps' => $this->nextSteps->jsonSerialize(),
-        ];
+        $this->nextSteps = new WorkflowStepDefinitions($resolved);
     }
 }

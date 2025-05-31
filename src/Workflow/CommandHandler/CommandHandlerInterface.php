@@ -6,8 +6,8 @@ namespace Sandstorm\ContentWorkflow\Domain\Workflow\CommandHandler;
 
 
 use Sandstorm\ContentWorkflow\Domain\Workflow\DrivingPorts\ForWorkflow;
-use Sandstorm\ContentWorkflow\Domain\Workflow\EventStore\WorkflowEvents;
 use Sandstorm\ContentWorkflow\Domain\Workflow\EventStore\WorkflowEventsToPersist;
+use Sandstorm\ContentWorkflow\Domain\Workflow\WorkflowProjectionState;
 
 /**
  * Common interface for all Game Command command handlers
@@ -18,5 +18,5 @@ interface CommandHandlerInterface
 {
     public function canHandle(CommandInterface $command): bool;
 
-    public function handle(CommandInterface $command, WorkflowEvents $state): WorkflowEventsToPersist;
+    public function handle(CommandInterface $command, WorkflowProjectionState $state): WorkflowEventsToPersist;
 }
