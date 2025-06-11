@@ -8,10 +8,11 @@ use Neos\EventStore\EventStoreInterface;
 use Neos\EventStore\Model\Event\Version;
 use Neos\EventStore\Model\Events;
 use Neos\EventStore\Model\EventStream\ExpectedVersion;
+use Sandstorm\ContentWorkflow\Domain\Workflow\CoreWorkflowApp;
 use Sandstorm\ContentWorkflow\Domain\Workflow\ValueObject\WorkflowId;
 
 /**
- * @internal from the outside world, you'll always use {@see CoreGameLogicApp})
+ * @internal from the outside world, you'll always use {@see CoreWorkflowApp})
  */
 final readonly class WorkflowEventStore
 {
@@ -26,11 +27,11 @@ final readonly class WorkflowEventStore
     public function hasWorkflow(WorkflowId $workflowId): bool
     {
         foreach ($this->eventStore->load($workflowId->streamName()) as $event) {
-            // we found at least one event; so the game exists.
+            // we found at least one event; so the workflow exists.
             return true;
         }
 
-        // we did not find any events for this game, so it does not exist
+        // we did not find any events for this workflow, so it does not exist
         return false;
     }
 
@@ -50,7 +51,11 @@ final readonly class WorkflowEventStore
 
     public function commit(WorkflowId $workflowId, WorkflowEventsToPersist $events, ExpectedVersion $expectedVersion): void
     {
-        $this->eventStore->commit($workflowId->streamName(), $this->enrichAndNormalizeEvents($events), $expectedVersion);
+        $this->eventStore->commit(
+            $workflowId->streamName(),
+            $this->enrichAndNormalizeEvents($events),
+            $expectedVersion
+        );
     }
 
     private function enrichAndNormalizeEvents(WorkflowEventsToPersist $events): Events

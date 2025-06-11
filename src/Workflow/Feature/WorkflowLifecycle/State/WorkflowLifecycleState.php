@@ -15,20 +15,26 @@ use Sandstorm\ContentWorkflow\Domain\WorkflowDefinition\ValueObject\WorkflowDefi
 
 trait WorkflowLifecycleState
 {
-    public function workflowDefinition(): WorkflowDefinition
+
+    public function nodeConnection(): NodeConnection
     {
-        return $this->workflowDefinitionApp->getDefinitionOrThrow(
-            $this->nodeTypeName(),
-            $this->definitionId()
-        );
+        return $this->events
+            ->findFirst(WorkflowWasStarted::class)
+            ->node;
     }
 
     public function isRunning(): bool
     {
-        $event = $this->events->findLastOrNullWhere(fn($event) => $event instanceof WorkflowWasAborted || $event instanceof WorkflowWasStarted || $event instanceof WorkflowWasReopened);
+        $event = $this->events
+            ->findLastOrNullWhere(fn($event) =>
+                $event instanceof WorkflowWasAborted
+                || $event instanceof WorkflowWasStarted
+                || $event instanceof WorkflowWasReopened
+            );
 
         // the last event of the 3 above must be Started or reopened for the workflow to be active.
-        return $event instanceof WorkflowWasStarted || $event instanceof WorkflowWasReopened;
+        return $event instanceof WorkflowWasStarted
+            || $event instanceof WorkflowWasReopened;
     }
 
     public function definitionId(): WorkflowDefinitionId
@@ -38,11 +44,15 @@ trait WorkflowLifecycleState
 
     public function nodeTypeName(): NodeTypeName
     {
-        return $this->events->findFirst(WorkflowWasStarted::class)->nodeTypeName;
+        return $this->events
+            ->findFirst(WorkflowWasStarted::class)
+            ->nodeTypeName;
     }
-
-    public function nodeConnection(): NodeConnection
+    public function workflowDefinition(): WorkflowDefinition
     {
-        return $this->events->findFirst(WorkflowWasStarted::class)->node;
+        return $this->workflowDefinitionApp->getDefinitionOrThrow(
+            $this->nodeTypeName(),
+            $this->definitionId()
+        );
     }
 }

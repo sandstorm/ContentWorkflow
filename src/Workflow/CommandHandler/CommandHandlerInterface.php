@@ -10,13 +10,18 @@ use Sandstorm\ContentWorkflow\Domain\Workflow\EventStore\WorkflowEventsToPersist
 use Sandstorm\ContentWorkflow\Domain\Workflow\WorkflowProjectionState;
 
 /**
- * Common interface for all Game Command command handlers
+ * Common interface for all Workflow Command command handlers
  *
  * @internal no public API, because commands are no extension points. ALWAYS USE {@see ForWorkflow::handle()} to trigger commands.
  */
 interface CommandHandlerInterface
 {
-    public function canHandle(CommandInterface $command): bool;
+    public function canHandle(
+        CommandInterface $command
+    ): bool;
 
-    public function handle(CommandInterface $command, WorkflowProjectionState $state): WorkflowEventsToPersist;
+    public function handle(
+        CommandInterface $command,
+        WorkflowProjectionState $state
+    ): WorkflowEventsToPersist;
 }
