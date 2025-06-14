@@ -17,6 +17,7 @@ use Neos\EventStore\Model\Event;
 use Neos\EventStore\Model\Event\EventData;
 use Neos\EventStore\Model\Event\EventId;
 use Neos\EventStore\Model\Event\EventType;
+use Neos\EventStore\Model\EventEnvelope;
 
 /**
  * Central authority to convert Game domain events to Event Store EventData and EventType, vice versa.
@@ -92,8 +93,9 @@ final readonly class EventNormalizer
         );
     }
 
-    public function denormalize(Event $event): WorkflowEventInterface
+    public function denormalize(EventEnvelope $eventEnvelope): WorkflowEventInterface
     {
+        $event = $eventEnvelope->event;
         $eventClassName = $this->getEventClassName($event);
         try {
             $eventDataAsArray = json_decode($event->data->value, true, 512, JSON_THROW_ON_ERROR);

@@ -19,8 +19,16 @@ use Sandstorm\ContentWorkflow\Domain\Workflow\Feature\WorkflowLifecycle\Workflow
 use Sandstorm\ContentWorkflow\Domain\Workflow\Feature\WorkflowStep\Event\TransitionedToStep;
 use Sandstorm\ContentWorkflow\Domain\Workflow\Feature\WorkflowStep\Event\WorkingDocumentSaved;
 use Sandstorm\ContentWorkflow\Domain\Workflow\Feature\WorkflowStep\WorkflowStepCommandHandler;
+use Sandstorm\ContentWorkflow\Domain\Workflow\SubscriptionEngine\SubscriptionEngineEventStoreAdapter;
 use Sandstorm\ContentWorkflow\Domain\Workflow\ValueObject\WorkflowId;
 use Sandstorm\ContentWorkflow\Domain\WorkflowDefinition\DrivingPorts\ForWorkflowDefinition;
+use Wwwision\SubscriptionEngine\Engine\SubscriptionEngine;
+use Wwwision\SubscriptionEngine\Subscriber\EventHandler;
+use Wwwision\SubscriptionEngine\Subscriber\Subscriber;
+use Wwwision\SubscriptionEngine\Subscriber\Subscribers;
+use Wwwision\SubscriptionEngine\Subscription\RunMode;
+use Wwwision\SubscriptionEngine\Subscription\SubscriptionId;
+use Wwwision\SubscriptionEngine\Tests\Mocks\InMemorySubscriptionStore;
 
 /**
  * Main implementation of core business logic
@@ -37,6 +45,7 @@ final class CoreWorkflowApp implements DrivingPorts\ForWorkflow
 {
     private CommandHandler\CommandBus $commandBus;
     private WorkflowEventStore $workflowEventStore;
+    private SubscriptionEngine $subscriptionEngine;
 
     public static function createInMemoryForTesting(ForWorkflowDefinition $workflowDefinitionApp): ForWorkflow
     {
@@ -61,6 +70,32 @@ final class CoreWorkflowApp implements DrivingPorts\ForWorkflow
             new WorkflowLifecycleCommandHandler($workflowDefinitionApp),
             new WorkflowStepCommandHandler(),
         );
+
+        $subscribers = Subscribers::fromArray([
+            // TODO add projections here.
+            new Subscriber(
+                SubscriptionId::fromString("foo"),
+                RunMode::FROM_BEGINNING, //?? ONCE?? -> one time migration
+
+            )
+        ]);
+
+
+        // TODO: USE OTHER STORE HERE (PERSISTENT!!)
+        $subscriptionStore = new InMemorySubscriptionStore();
+
+        $this->subscriptionEngine = new SubscriptionEngine(
+            new SubscriptionEngineEventStoreAdapter($eventStore),
+            $subscriptionStore,
+            $subscribers,
+        );
+    }
+
+    public function setup() {
+        $this->subscriptionEngine->setup();
+
+        // SOLLTE NICHT PER REQUEST SEIN.
+        $this->subscriptionEngine->boot();
     }
 
     public function hasWorkflow(WorkflowId $workflowId): bool
@@ -86,6 +121,10 @@ final class CoreWorkflowApp implements DrivingPorts\ForWorkflow
         $state = new WorkflowProjectionState($this->workflowDefinitionApp, $events);
         $eventsToPublish = $this->commandBus->handle($command, $state);
         $this->workflowEventStore->commit($workflowId, $eventsToPublish, $version === null ? ExpectedVersion::NO_STREAM() : ExpectedVersion::fromVersion($version));
+
+        // TODO: correct??
+        $this->subscriptionEngine->catchUpActive();
+        // TODO: onEvent -> wording clash...
     }
 
     public function definitions(): ForWorkflowDefinition

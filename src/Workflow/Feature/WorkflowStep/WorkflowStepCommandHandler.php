@@ -42,6 +42,15 @@ readonly class WorkflowStepCommandHandler implements CommandHandlerInterface
 
     private function handleTransitionToStep(TransitionToStep $command, WorkflowProjectionState $state): WorkflowEventsToPersist
     {
+        // TODO: EVENTS reingeben, dann explizit State aufbauen.
+        // WorkflowProjectionState::forEvents($events)->...
+        //$previousStep = $this->ensurePreviousStepExists($state);
+        // otherwise exception.
+
+        // ALTERNATIVE: other event
+
+
+
         return WorkflowEventsToPersist::with(
             new TransitionedToStep(
                 completedStepId: $state->currentStepOrNull()->id,
