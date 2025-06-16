@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace Sandstorm\ContentWorkflow\Domain\Workflow;
 
 
+use Doctrine\DBAL\Connection;
 use Neos\EventStore\EventStoreInterface;
 use Neos\EventStore\Helper\InMemoryEventStore;
+use Neos\EventStore\Model\EventEnvelope;
 use Neos\EventStore\Model\EventStream\ExpectedVersion;
 use Sandstorm\ContentWorkflow\Domain\Workflow\DrivingPorts\ForWorkflow;
 use Sandstorm\ContentWorkflow\Domain\Workflow\EventStore\WorkflowEventInterface;
@@ -19,16 +21,17 @@ use Sandstorm\ContentWorkflow\Domain\Workflow\Feature\WorkflowLifecycle\Workflow
 use Sandstorm\ContentWorkflow\Domain\Workflow\Feature\WorkflowStep\Event\TransitionedToStep;
 use Sandstorm\ContentWorkflow\Domain\Workflow\Feature\WorkflowStep\Event\WorkingDocumentSaved;
 use Sandstorm\ContentWorkflow\Domain\Workflow\Feature\WorkflowStep\WorkflowStepCommandHandler;
-use Sandstorm\ContentWorkflow\Domain\Workflow\SubscriptionEngine\SubscriptionEngineEventStoreAdapter;
+use Sandstorm\ContentWorkflow\Domain\Workflow\Projection\OverviewProjection\OverviewProjection;
+use Sandstorm\ContentWorkflow\Domain\Workflow\SubscriptionEngine\DoctrineSubscriptionStore;
 use Sandstorm\ContentWorkflow\Domain\Workflow\ValueObject\WorkflowId;
 use Sandstorm\ContentWorkflow\Domain\WorkflowDefinition\DrivingPorts\ForWorkflowDefinition;
-use Wwwision\SubscriptionEngine\Engine\SubscriptionEngine;
-use Wwwision\SubscriptionEngine\Subscriber\EventHandler;
 use Wwwision\SubscriptionEngine\Subscriber\Subscriber;
 use Wwwision\SubscriptionEngine\Subscriber\Subscribers;
 use Wwwision\SubscriptionEngine\Subscription\RunMode;
 use Wwwision\SubscriptionEngine\Subscription\SubscriptionId;
+use Wwwision\SubscriptionEngine\SubscriptionEngine;
 use Wwwision\SubscriptionEngine\Tests\Mocks\InMemorySubscriptionStore;
+use Wwwision\SubscriptionEngineNeosAdapter\NeosEventStoreAdapter;
 
 /**
  * Main implementation of core business logic
@@ -53,9 +56,11 @@ final class CoreWorkflowApp implements DrivingPorts\ForWorkflow
     }
 
     public function __construct(
-        EventStoreInterface   $eventStore,
+        EventStoreInterface                    $eventStore,
+        Connection                             $dbalConnection,
         private readonly ForWorkflowDefinition $workflowDefinitionApp,
-    ) {
+    )
+    {
         $eventNormalizer = EventStore\EventNormalizer::create([
             WorkflowWasStarted::class,
             WorkflowWasAborted::class,
@@ -71,27 +76,33 @@ final class CoreWorkflowApp implements DrivingPorts\ForWorkflow
             new WorkflowStepCommandHandler(),
         );
 
+        $overviewProjection = new OverviewProjection();
         $subscribers = Subscribers::fromArray([
-            // TODO add projections here.
-            new Subscriber(
-                SubscriptionId::fromString("foo"),
+            Subscriber::create(
+                "overview",
+                fn(EventEnvelope $eventEnvelope) => $overviewProjection->handle(
+                    $eventNormalizer->denormalize($eventEnvelope),
+                    $eventEnvelope
+                ),
                 RunMode::FROM_BEGINNING, //?? ONCE?? -> one time migration
-
+                fn() => $overviewProjection->setup(),
+                fn() => $overviewProjection->reset(),
             )
         ]);
 
 
         // TODO: USE OTHER STORE HERE (PERSISTENT!!)
-        $subscriptionStore = new InMemorySubscriptionStore();
+        $subscriptionStore = new DoctrineSubscriptionStore($dbalConnection, tableName: 'workflow_subscriptions');
 
         $this->subscriptionEngine = new SubscriptionEngine(
-            new SubscriptionEngineEventStoreAdapter($eventStore),
+            new NeosEventStoreAdapter($eventStore),
             $subscriptionStore,
             $subscribers,
         );
     }
 
-    public function setup() {
+    public function setup(): void
+    {
         $this->subscriptionEngine->setup();
 
         // SOLLTE NICHT PER REQUEST SEIN.

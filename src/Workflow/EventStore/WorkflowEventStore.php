@@ -43,7 +43,7 @@ final readonly class WorkflowEventStore
         $WorkflowEvents = [];
         $version = null;
         foreach ($this->eventStore->load($workflowId->streamName()) as $eventEnvelope) {
-            $WorkflowEvents[] = $this->eventNormalizer->denormalize($eventEnvelope->event);
+            $WorkflowEvents[] = $this->eventNormalizer->denormalize($eventEnvelope);
             $version = $eventEnvelope->version;
         }
         return [WorkflowEvents::fromArray($WorkflowEvents), $version];

@@ -18,8 +18,8 @@ use Sandstorm\ContentWorkflow\Domain\WorkflowDefinition\DrivingPorts\ForWorkflow
  */
 interface ForWorkflow
 {
+    public function setup(): void;
     public function hasWorkflow(WorkflowId $workflowId): bool;
-
     public function stateFor(WorkflowId $workflowId): WorkflowProjectionState;
     public function emptyState(): WorkflowProjectionState;
 

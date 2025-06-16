@@ -32,6 +32,7 @@ class WorkflowFactory
     {
         return new CoreWorkflowApp(
             $this->eventStore,
+            $this->connection,
             new WorkflowDefinitionApp($this->nodeTypeManager)
         );
     }

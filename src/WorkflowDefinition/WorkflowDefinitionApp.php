@@ -30,8 +30,10 @@ class WorkflowDefinitionApp implements ForWorkflowDefinition
         $nodeType = $this->nodeTypeManager->getNodeType($nodeTypeName->getValue());
         $arr = $nodeType->getConfiguration('options.workflows');
         $result = [];
-        foreach ($arr as $id => $def) {
-            $result[] = WorkflowDefinition::fromArray(WorkflowDefinitionId::fromString($id), $def);
+        if (is_array($arr)) {
+            foreach ($arr as $id => $def) {
+                $result[] = WorkflowDefinition::fromArray(WorkflowDefinitionId::fromString($id), $def);
+            }
         }
 
         return $result;

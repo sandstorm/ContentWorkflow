@@ -2,14 +2,32 @@
 
 namespace Sandstorm\ContentWorkflow\Domain\Workflow\Projection\OverviewProjection;
 
-use Wwwision\SubscriptionEngine\EventStore\Event;
-use Wwwision\SubscriptionEngine\Subscriber\EventHandler;
+use Sandstorm\ContentWorkflow\Domain\Workflow\EventStore\WorkflowEventInterface;
+use Sandstorm\ContentWorkflow\Domain\Workflow\Feature\WorkflowLifecycle\Event\WorkflowWasStarted;
 
-class OverviewProjection implements EventHandler
+class OverviewProjection
 {
 
-    public function __invoke(Event $event): void
+
+    public function handle(WorkflowEventInterface $event, \Neos\EventStore\Model\EventEnvelope $eventEnvelope): void
     {
-        // TODO: EVENT BRIDGING -> HOW???
+        match($event::class) {
+            WorkflowWasStarted::class => $this->handleWorkflowWasStarted($event)
+        };
+    }
+
+    private function handleWorkflowWasStarted(WorkflowWasStarted $event)
+    {
+
+    }
+
+    public function setup()
+    {
+
+    }
+
+    public function reset()
+    {
+
     }
 }
